@@ -1,2 +1,3 @@
 tavenv
 **/__pycache__
+.env.dev
