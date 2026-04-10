@@ -1,3 +1,4 @@
 tavenv
 **/__pycache__
 .env.dev
+plan.md
