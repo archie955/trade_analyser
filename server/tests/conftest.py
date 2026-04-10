@@ -66,3 +66,26 @@ def authenticated_user(client):
         "updated_at": user_in_db["updated_at"],
         "access_token": access_token
     }
+
+class Helpers:
+    def auth_headers(authenticated_user):
+        return {
+            "Authorization": f"Bearer {authenticated_user['access_token']}"
+        }
+    
+    def register_user(client):
+        response = client.post(
+            "/users/",
+            json={
+                "email": "authuser@example.com",
+                "username": "authusername",
+                "password": "authpassword"
+            }
+        )
+
+        assert response.status_code == 201
+        return response.json()
+    
+@pytest.fixture
+def helpers():
+    return Helpers()

@@ -1,8 +1,3 @@
-def auth_headers(authenticated_user):
-    return {
-        "Authorization": f"Bearer {authenticated_user['access_token']}"
-    }
-
 # Registration endpoint testing
 
 def test_registration(client):
@@ -210,12 +205,8 @@ def test_incorrect_email(client):
 
 # test update endpoint
 
-def test_update_email(client, authenticated_user):
-    user = {
-        "email": "authuser@example.com",
-        "username": "authusername",
-        "password": "authpassword"
-    }
+def test_update_email(client, authenticated_user, helpers):
+    user = helpers.register_user(client)
     updated_payload = {
         "updated_user": {
             "email": "newemail@example.com",
@@ -227,7 +218,7 @@ def test_update_email(client, authenticated_user):
     response = client.put(
         "/users/",
         json=updated_payload,
-        headers=auth_headers(authenticated_user)
+        headers=helpers.auth_headers(authenticated_user)
         )
     
     assert response.status_code == 200
@@ -236,7 +227,7 @@ def test_update_email(client, authenticated_user):
     assert data["email"] == "newemail@example.com"
     assert data["username"] == user["username"]
 
-def test_update_username(client, authenticated_user):
+def test_update_username(client, authenticated_user, helpers):
     user = {
         "email": "authuser@example.com",
         "username": "authusername",
@@ -253,7 +244,7 @@ def test_update_username(client, authenticated_user):
     response = client.put(
         "/users/",
         json=updated_payload,
-        headers=auth_headers(authenticated_user)
+        headers=helpers.auth_headers(authenticated_user)
         )
     
     assert response.status_code == 200
@@ -262,7 +253,7 @@ def test_update_username(client, authenticated_user):
     assert data["email"] == user["email"]
     assert data["username"] == "newusername"
 
-def test_update_password(client, authenticated_user):
+def test_update_password(client, authenticated_user, helpers):
     user = {
         "email": "authuser@example.com",
         "username": "authusername",
@@ -279,7 +270,7 @@ def test_update_password(client, authenticated_user):
     response = client.put(
         "/users/",
         json=updated_payload,
-        headers=auth_headers(authenticated_user)
+        headers=helpers.auth_headers(authenticated_user)
         )
     
     assert response.status_code == 200
@@ -288,7 +279,7 @@ def test_update_password(client, authenticated_user):
     assert data["email"] == user["email"]
     assert data["username"] == user["username"]
 
-def test_update_incorrect_password(client, authenticated_user):
+def test_update_incorrect_password(client, authenticated_user, helpers):
     user = {
         "email": "authuser@example.com",
         "username": "authusername",
@@ -305,12 +296,12 @@ def test_update_incorrect_password(client, authenticated_user):
     response = client.put(
         "/users/",
         json=updated_payload,
-        headers=auth_headers(authenticated_user)
+        headers=helpers.auth_headers(authenticated_user)
         )
     
     assert response.status_code == 401
 
-def test_update_same_info(client, authenticated_user):
+def test_update_same_info(client, authenticated_user, helpers):
     user = {
         "email": "authuser@example.com",
         "username": "authusername",
@@ -327,7 +318,7 @@ def test_update_same_info(client, authenticated_user):
     response = client.put(
         "/users/",
         json=updated_payload,
-        headers=auth_headers(authenticated_user)
+        headers=helpers.auth_headers(authenticated_user)
         )
     
     assert response.status_code == 400
@@ -336,9 +327,9 @@ def test_update_same_info(client, authenticated_user):
 # test delete endpoint
 
 
-def test_delete(client, authenticated_user):
+def test_delete(client, authenticated_user, helpers):
     response = client.delete("/users/",
-                             headers=auth_headers(authenticated_user)
+                             headers=helpers.auth_headers(authenticated_user)
                              )
     assert response.status_code == 204
 
