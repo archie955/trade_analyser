@@ -1,61 +1,33 @@
 # Registration endpoint testing
 
-def test_registration(client):
-    response = client.post(
-        "/users/",
-        json={
-            "email": "test@example.com",
-            "username": "testusername",
-            "password": "testpassword"
-        }
-    )
+def test_registration(client, helper):
+    response = helper.register_user(client)
 
-    assert response.status_code == 201
-
-    data = response.json()
-    assert data["email"] == "test@example.com"
-    assert data["username"] == "testusername"
-    assert "id" in data
-    assert "created_at" in data
-    assert "updated_at" in data
+    assert response["email"] == "authuser@example.com"
+    assert response["username"] == "authusername"
+    assert "id" in response
+    assert "created_at" in response
+    assert "updated_at" in response
 
 
-def test_duplicate_email_registration(client):
-    user = {
-        "email": "duplicate@example.com",
-        "username": "duplicateusername",
-        "password": "duplicatepassword"
-    } 
-
-    client.post("/users/", json=user)
+def test_duplicate_email_registration(client, helper):
+    user = helper.register_user(client)
 
     user["username"] = "newusername"
     response = client.post("/users/", json=user)
 
     assert response.status_code == 409
 
-def test_duplicate_username_registration(client):
-    user = {
-        "email": "duplicate@example.com",
-        "username": "duplicateusername",
-        "password": "duplicatepassword"
-    } 
-
-    client.post("/users/", json=user)
+def test_duplicate_username_registration(client, helper):
+    user = helper.register_user(client)
 
     user["email"] = "newusername@example.com"
     response = client.post("/users/", json=user)
 
     assert response.status_code == 409
 
-def test_duplicate_password_ok(client):
-    user = {
-        "email": "duplicate@example.com",
-        "username": "duplicateusername",
-        "password": "duplicatepassword"
-    }
-
-    client.post("/users/", json=user)
+def test_duplicate_password_ok(client, helper):
+    user = helper.register_user(client)
 
     user["email"] = "newusername@example.com"
     user["username"] = "newusername"
@@ -108,39 +80,14 @@ def test_incorrect_email_type(client):
 
 # Login endpoint testing
 
-def test_login_email(client):
-    user = {
-        "email": "root@email.com",
-        "username": "root",
-        "password": "passwordroot"
-    }
-    client.post("/users/", json=user)
+def test_login_email(client, helper):
+    response = helper.full_login(client)
 
-    response = client.post(
-        "/users/login",
-        data={
-            "username": user["email"],
-            "password": user["password"]
-        },
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    )
+    assert "access_token" in response
+    assert response["token_type"] == "bearer"
 
-    assert response.status_code == 200
-
-    data = response.json()
-
-    assert "access_token" in data
-    assert data["token_type"] == "bearer"
-
-def test_login_username(client):
-    user = {
-        "email": "root@email.com",
-        "username": "root",
-        "password": "passwordroot"
-    }
-    client.post("/users/", json=user)
+def test_login_username(client, helper):
+    user = helper.register_user(client)
 
     response = client.post(
         "/users/login",
@@ -160,13 +107,8 @@ def test_login_username(client):
     assert "access_token" in data
     assert data["token_type"] == "bearer"
 
-def test_incorrect_password(client):
-    user = {
-        "email": "root@email.com",
-        "username": "root",
-        "password": "passwordroot"
-    }
-    client.post("/users/", json=user)
+def test_incorrect_password(client, helper):
+    user = helper.register_user(client)
 
     response = client.post(
         "/users/login",
@@ -181,13 +123,8 @@ def test_incorrect_password(client):
 
     assert response.status_code == 403
 
-def test_incorrect_email(client):
-    user = {
-        "email": "root@email.com",
-        "username": "root",
-        "password": "passwordroot"
-    }
-    client.post("/users/", json=user)
+def test_incorrect_email(client, helper):
+    user = helper.register_user(client)
 
     response = client.post(
         "/users/login",
@@ -205,8 +142,9 @@ def test_incorrect_email(client):
 
 # test update endpoint
 
-def test_update_email(client, authenticated_user, helpers):
-    user = helpers.register_user(client)
+def test_update_email(client, helpers):
+    user = helpers.full_login(client)
+
     updated_payload = {
         "updated_user": {
             "email": "newemail@example.com",
@@ -215,24 +153,13 @@ def test_update_email(client, authenticated_user, helpers):
         },
         "password": user["password"]
     }
-    response = client.put(
-        "/users/",
-        json=updated_payload,
-        headers=helpers.auth_headers(authenticated_user)
-        )
-    
-    assert response.status_code == 200
+    response = helpers.update_user(client, updated_payload, user)
 
-    data = response.json()
-    assert data["email"] == "newemail@example.com"
-    assert data["username"] == user["username"]
+    assert response["email"] == "newemail@example.com"
+    assert response["username"] == user["username"]
 
-def test_update_username(client, authenticated_user, helpers):
-    user = {
-        "email": "authuser@example.com",
-        "username": "authusername",
-        "password": "authpassword"
-    }
+def test_update_username(client, helpers):
+    user = helpers.full_login(client)
     updated_payload = {
         "updated_user": {
             "email": user["email"],
@@ -241,24 +168,14 @@ def test_update_username(client, authenticated_user, helpers):
         },
         "password": user["password"]
     }
-    response = client.put(
-        "/users/",
-        json=updated_payload,
-        headers=helpers.auth_headers(authenticated_user)
-        )
-    
-    assert response.status_code == 200
+    response = helpers.update_user(client, updated_payload, user)
 
-    data = response.json()
-    assert data["email"] == user["email"]
-    assert data["username"] == "newusername"
+    assert response["email"] == user["email"]
+    assert response["username"] == "newusername"
 
-def test_update_password(client, authenticated_user, helpers):
-    user = {
-        "email": "authuser@example.com",
-        "username": "authusername",
-        "password": "authpassword"
-    }
+def test_update_password(client, helpers):
+    user = helpers.full_login(client)
+
     updated_payload = {
         "updated_user": {
             "email": user["email"],
@@ -267,24 +184,15 @@ def test_update_password(client, authenticated_user, helpers):
         },
         "password": user["password"]
     }
-    response = client.put(
-        "/users/",
-        json=updated_payload,
-        headers=helpers.auth_headers(authenticated_user)
-        )
-    
-    assert response.status_code == 200
 
-    data = response.json()
-    assert data["email"] == user["email"]
-    assert data["username"] == user["username"]
+    response = helpers.update_user(client, updated_payload, user)
 
-def test_update_incorrect_password(client, authenticated_user, helpers):
-    user = {
-        "email": "authuser@example.com",
-        "username": "authusername",
-        "password": "authpassword"
-    }
+    assert response["email"] == user["email"]
+    assert response["username"] == user["username"]
+
+def test_update_incorrect_password(client, helpers):
+    user = helpers.full_login(client)
+
     updated_payload = {
         "updated_user": {
             "email": "newemail@example.com",
@@ -296,17 +204,14 @@ def test_update_incorrect_password(client, authenticated_user, helpers):
     response = client.put(
         "/users/",
         json=updated_payload,
-        headers=helpers.auth_headers(authenticated_user)
+        headers=helpers.auth_headers(user)
         )
     
     assert response.status_code == 401
 
-def test_update_same_info(client, authenticated_user, helpers):
-    user = {
-        "email": "authuser@example.com",
-        "username": "authusername",
-        "password": "authpassword"
-    }
+def test_update_same_info(client, helpers):
+    user = helpers.full_login(client)
+
     updated_payload = {
         "updated_user": {
             "email": user["email"],
@@ -318,7 +223,7 @@ def test_update_same_info(client, authenticated_user, helpers):
     response = client.put(
         "/users/",
         json=updated_payload,
-        headers=helpers.auth_headers(authenticated_user)
+        headers=helpers.auth_headers(user)
         )
     
     assert response.status_code == 400
@@ -327,14 +232,25 @@ def test_update_same_info(client, authenticated_user, helpers):
 # test delete endpoint
 
 
-def test_delete(client, authenticated_user, helpers):
+def test_delete(client, helpers):
+    user = helpers.full_login(client)
+
     response = client.delete("/users/",
-                             headers=helpers.auth_headers(authenticated_user)
+                             headers=helpers.auth_headers(user)
                              )
+    
     assert response.status_code == 204
 
-def test_delete_no_auth(client, authenticated_user):
-    response = client.delete("/users/",
-                             headers=None
-                             )
+def test_delete_not_logged_in(client, helpers):
+    user = helpers.register_user(client)
+
+    response = client.delete("/users/")
+
+    assert response.status_code == 401
+
+def test_delete_logged_in_no_headers(client, helpers):
+    response = helpers.full_login(client)
+
+    response = client.delete("/users/")
+
     assert response.status_code == 401

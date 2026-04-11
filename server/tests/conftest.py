@@ -22,6 +22,7 @@ def db(engine):
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
     yield db
+    db.rollback()
     db.close()
 
 @pytest.fixture(scope="function")
@@ -39,40 +40,7 @@ def client(db):
 
     app.dependency_overrides.clear()
 
-@pytest.fixture
-def authenticated_user(client):
-    user = {
-        "email": "authuser@example.com",
-        "username": "authusername",
-        "password": "authpassword"
-    }
-
-    user_in_db = client.post("/users/", json=user).json()
-
-    response = client.post("/users/login",
-                           data={
-                               "username": user["email"],
-                               "password": user["password"]
-                           },
-                           headers={"Content-Type": "application/x-www-form-urlencoded"}
-                        )
-    access_token = response.json()["access_token"]
-
-    return {
-        "email": user_in_db["email"],
-        "username": user_in_db["username"],
-        "password": user["password"],
-        "created_at": user_in_db["created_at"],
-        "updated_at": user_in_db["updated_at"],
-        "access_token": access_token
-    }
-
 class Helpers:
-    def auth_headers(authenticated_user):
-        return {
-            "Authorization": f"Bearer {authenticated_user['access_token']}"
-        }
-    
     def register_user(client):
         response = client.post(
             "/users/",
@@ -84,6 +52,52 @@ class Helpers:
         )
 
         assert response.status_code == 201
+        return response.json()
+    
+    def full_login(client):
+        user_payload = client.post(
+            "/users/",
+            json={
+                "email": "authuser@example.com",
+                "username": "authusername",
+                "password": "authpassword"
+            }
+        )
+
+        assert user_payload.status_code == 201
+        user = user_payload.json()
+        response = client.post(
+            "/users/login",
+            data={
+                "username": user["email"],
+                "password": user["password"]
+            },
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "access_token" in data
+        return data
+    
+    def auth_headers(user, expired=False):
+        token = user["access_token"]
+        if expired:
+            token = "expired_token"
+        return {
+            "Authorization": f"Bearer {token}"
+        }
+    
+    def update_user(client, updated, user):
+        response = client.put(
+            "/users/",
+            json=updated,
+            headers={"Authorization": f"Bearer {user['access_token']}"}
+            )
+
+        assert response.status_code == 200
         return response.json()
     
 @pytest.fixture
