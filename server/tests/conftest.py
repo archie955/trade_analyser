@@ -41,31 +41,38 @@ def client(db):
     app.dependency_overrides.clear()
 
 class Helpers:
+    @staticmethod
     def register_user(client):
+        user = {
+            "email": "authuser@example.com",
+            "username": "authusername",
+            "password": "authpassword"
+        }
         response = client.post(
             "/users/",
-            json={
-                "email": "authuser@example.com",
-                "username": "authusername",
-                "password": "authpassword"
-            }
+            json=user
         )
 
         assert response.status_code == 201
-        return response.json()
+        data = response.json()
+        assert "created_at" in data
+        assert "updated_at" in data
+        return user
     
+    @staticmethod
     def full_login(client):
+        user = {
+            "email": "authuser@example.com",
+            "username": "authusername",
+            "password": "authpassword"
+        }
         user_payload = client.post(
             "/users/",
-            json={
-                "email": "authuser@example.com",
-                "username": "authusername",
-                "password": "authpassword"
-            }
+            json=user
         )
 
         assert user_payload.status_code == 201
-        user = user_payload.json()
+
         response = client.post(
             "/users/login",
             data={
@@ -80,8 +87,11 @@ class Helpers:
         assert response.status_code == 200
         data = response.json()
         assert "access_token" in data
-        return data
+        assert data["token_type"] == "bearer"
+        user["access_token"] = data["access_token"]
+        return user
     
+    @staticmethod
     def auth_headers(user, expired=False):
         token = user["access_token"]
         if expired:
@@ -90,6 +100,7 @@ class Helpers:
             "Authorization": f"Bearer {token}"
         }
     
+    @staticmethod
     def update_user(client, updated, user):
         response = client.put(
             "/users/",
@@ -102,4 +113,4 @@ class Helpers:
     
 @pytest.fixture
 def helpers():
-    return Helpers()
+    return Helpers

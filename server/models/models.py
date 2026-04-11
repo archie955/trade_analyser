@@ -150,7 +150,7 @@ class Team(Base):
         back_populates="teams"
     )
 
-    players = relationship(
+    players: Mapped[list["Player"]] = relationship(
         "Player",
         secondary="team_players",
         back_populates="teams"
@@ -201,7 +201,7 @@ class Player(Base):
         server_default="0.0"
     )
 
-    teams = relationship(
+    teams: Mapped[list["Team"]] = relationship(
         "Team",
         secondary="team_players",
         back_populates="players"
@@ -232,15 +232,5 @@ class TeamPlayer(Base):
         ForeignKey("players.id", ondelete="CASCADE"),
         nullable=True
     )
-
-    team = relationship(
-        "Team",
-        back_populates="players"
-    )
-    player = relationship(
-        "Player",
-        back_populates="teams"
-    )
-
 
 

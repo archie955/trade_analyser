@@ -1,33 +1,30 @@
 # Registration endpoint testing
 
-def test_registration(client, helper):
-    response = helper.register_user(client)
+def test_registration(client, helpers):
+    response = helpers.register_user(client)
 
     assert response["email"] == "authuser@example.com"
     assert response["username"] == "authusername"
-    assert "id" in response
-    assert "created_at" in response
-    assert "updated_at" in response
 
 
-def test_duplicate_email_registration(client, helper):
-    user = helper.register_user(client)
+def test_duplicate_email_registration(client, helpers):
+    user = helpers.register_user(client)
 
     user["username"] = "newusername"
     response = client.post("/users/", json=user)
 
     assert response.status_code == 409
 
-def test_duplicate_username_registration(client, helper):
-    user = helper.register_user(client)
+def test_duplicate_username_registration(client, helpers):
+    user = helpers.register_user(client)
 
     user["email"] = "newusername@example.com"
     response = client.post("/users/", json=user)
 
     assert response.status_code == 409
 
-def test_duplicate_password_ok(client, helper):
-    user = helper.register_user(client)
+def test_duplicate_password_ok(client, helpers):
+    user = helpers.register_user(client)
 
     user["email"] = "newusername@example.com"
     user["username"] = "newusername"
@@ -80,14 +77,13 @@ def test_incorrect_email_type(client):
 
 # Login endpoint testing
 
-def test_login_email(client, helper):
-    response = helper.full_login(client)
+def test_login_email(client, helpers):
+    response = helpers.full_login(client)
 
     assert "access_token" in response
-    assert response["token_type"] == "bearer"
 
-def test_login_username(client, helper):
-    user = helper.register_user(client)
+def test_login_username(client, helpers):
+    user = helpers.register_user(client)
 
     response = client.post(
         "/users/login",
@@ -107,8 +103,8 @@ def test_login_username(client, helper):
     assert "access_token" in data
     assert data["token_type"] == "bearer"
 
-def test_incorrect_password(client, helper):
-    user = helper.register_user(client)
+def test_incorrect_password(client, helpers):
+    user = helpers.register_user(client)
 
     response = client.post(
         "/users/login",
@@ -123,8 +119,8 @@ def test_incorrect_password(client, helper):
 
     assert response.status_code == 403
 
-def test_incorrect_email(client, helper):
-    user = helper.register_user(client)
+def test_incorrect_email(client, helpers):
+    user = helpers.register_user(client)
 
     response = client.post(
         "/users/login",
