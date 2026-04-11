@@ -119,6 +119,10 @@ class Team(Base):
         autoincrement=True,
         nullable=False
     )
+    name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False
+    )
     user_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -206,10 +210,21 @@ class Player(Base):
 class TeamPlayer(Base):
     __tablename__ = "team_players"
 
+    __table_args__ = (
+        UniqueConstraint("team_id", "player_id", name="uq_team_player"),
+        Index("ix_team_players_team_id", "team_id")
+    )
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+        nullable=False,
+        autoincrement=True
+    )
+
     team_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("teams.id", ondelete="CASCADE"),
-        primary_key=True,
         nullable=False
     )
     player_id: Mapped[int] = mapped_column(
