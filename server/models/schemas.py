@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 config = ConfigDict(from_attributes=True)
@@ -45,5 +45,8 @@ class LeagueOut(LeagueCreate):
 
 class LeagueUpdate(LeagueCreate):
     id: int
+
+class Leagues(BaseModel):
+    leagues: List[LeagueOut]
 
 # TEAMS

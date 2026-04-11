@@ -39,15 +39,7 @@ def create_user(
     db.commit()
     db.refresh(new_user)
 
-    userOut = schemas.UserOut(
-        id=new_user.id,
-        email=new_user.email,
-        username=new_user.username,
-        created_at=new_user.created_at,
-        updated_at=new_user.updated_at
-    )
-
-    return userOut
+    return schemas.UserOut.model_validate(new_user)
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=schemas.Token)
 def login(
@@ -75,12 +67,8 @@ def login(
 
     access = auth.create_access_token(data=user_data)
 
-    token = schemas.Token(
-        access_token = access,
-        token_type = "bearer"
-    )
+    return schemas.Token(access_token = access, token_type = "bearer")
 
-    return token
     
 @router.put("/", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
 def update_user(
@@ -112,15 +100,7 @@ def update_user(
     db.commit()
     db.refresh(user)
 
-    userOut = schemas.UserOut(
-        id=user.id,
-        email=user.email,
-        username=user.username,
-        created_at=user.created_at,
-        updated_at=user.updated_at
-    )
-
-    return userOut
+    return schemas.UserOut.model_validate(user)
 
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(

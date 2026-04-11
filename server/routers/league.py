@@ -20,14 +20,16 @@ def create_league(
 
     return schemas.LeagueOut.model_validate(db_league)
 
-# @router.get("/", status_code=status.HTTP_200_OK, response_model=schemas.Leagues)
-# def get_leagues(
-#     db: Session = Depends(get_db),
-#     user: models.User = Depends(get_current_user)
-# ):
-#     leagues = db.query(models.League).filter(models.League.user_id == user.id).all()
-# 
-#     return schemas.Leagues(leagues)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=schemas.Leagues)
+def get_leagues(
+    db: Session = Depends(get_db),
+    user: models.User = Depends(get_current_user)
+):
+    leagues = db.query(models.League).filter(models.League.user_id == user.id).all()
+
+    league_list = [schemas.LeagueOut.model_validate(league) for league in leagues]
+
+    return schemas.Leagues(league_list)
 # 
 # @router.put("/", status_code=status.HTTP_200_OK, response_model=schemas.LeagueOut)
 # def update_league_info(
