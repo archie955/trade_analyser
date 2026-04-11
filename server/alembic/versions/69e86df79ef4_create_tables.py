@@ -67,9 +67,9 @@ def upgrade():
         sa.Column("name", sa.String(100), nullable=False),
         sa.Column("team", teams_enum, nullable=False),
         sa.Column("position", positions_enum, nullable=False),
-        sa.Column("points_ppr", sa.DECIMAL(10, 3), nullable=False, server_default=0.0),
-        sa.Column("points_halfppr", sa.DECIMAL(10, 3), nullable=False, server_default=0.0),
-        sa.Column("points_noppr", sa.DECIMAL(10, 3), nullable=False, server_default=0.0)
+        sa.Column("points_ppr", sa.DECIMAL(10, 3), nullable=False, server_default="0.0"),
+        sa.Column("points_halfppr", sa.DECIMAL(10, 3), nullable=False, server_default="0.0"),
+        sa.Column("points_noppr", sa.DECIMAL(10, 3), nullable=False, server_default="0.0")
     )
     op.create_index("ix_players_team", "players", ["team"])
     op.create_index("ix_players_position", "players", ["position"])

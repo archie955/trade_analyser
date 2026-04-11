@@ -2,7 +2,7 @@ from database.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, DateTime, func, ForeignKey, UniqueConstraint, Index, Integer, Enum as sqlEnum, DECIMAL
 from datetime import datetime
-from datatypes import Teams, Positions
+from models.datatypes import Teams, Positions
 
 teamsdt = sqlEnum(Teams, name="teamsdt")
 positionsdt = sqlEnum(Positions, name="positionsdt")
@@ -188,17 +188,17 @@ class Player(Base):
     points_ppr: Mapped[float] = mapped_column(
         DECIMAL(10,3),
         nullable=False,
-        server_default=0.0
+        server_default="0.0"
     )
     points_halfppr: Mapped[float] = mapped_column(
         DECIMAL(10,3),
         nullable=False,
-        server_default=0.0
+        server_default="0.0"
     )
     points_noppr: Mapped[float] = mapped_column(
         DECIMAL(10,3),
         nullable=False,
-        server_default=0.0
+        server_default="0.0"
     )
 
     teams = relationship(
