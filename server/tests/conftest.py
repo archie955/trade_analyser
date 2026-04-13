@@ -40,6 +40,64 @@ def client(db):
 
     app.dependency_overrides.clear()
 
+class AuthClient:
+    def __init__(self, client, user, leagues=False):
+        self.client = client
+        self.user = user
+        if leagues:
+            self.post("/leagues/", json={"name": "league_1"})
+            self.post("/leagues/", json={"name": "league_2"})
+
+    def auth_headers(self, expired=False):
+        token = self.user["access_token"]
+        if expired:
+            token = "expired_token"
+        return {
+            "Authorization": f"Bearer {token}"
+        }
+
+    def request(self, method, url, **kwargs):
+        headers = kwargs.pop("headers", {})
+        headers.update(self.auth_headers())
+        return self.client.request(method, url, headers=headers, **kwargs)
+    
+    def get(self, url, **kwargs):
+        return self.request("GET", url, **kwargs)
+    
+    def post(self, url, **kwargs):
+        print(f"posting to {url} with kwargs {kwargs}")
+        return self.request("POST", url, **kwargs)
+    
+    def put(self, url, **kwargs):
+        return self.request("PUT", url, **kwargs)
+    
+    def delete(self, url, **kwargs):
+        return self.request("DELETE", url, **kwargs)
+    
+    def noauth_get(self, url, **kwargs):
+        return self.client.get(url, **kwargs)
+    
+    def noauth_post(self, url, **kwargs):
+        return self.client.post(url, **kwargs)
+    
+    def noauth_put(self, url, **kwargs):
+        return self.client.put(url, **kwargs)
+    
+    def noauth_delete(self, url, **kwargs):
+        return self.client.delete(url, **kwargs)
+
+@pytest.fixture
+def auth_client(client, helpers):
+    user = helpers.full_login(client)
+    
+    return AuthClient(client, user)
+
+@pytest.fixture
+def auth_client_leagues(client, helpers):
+    user = helpers.full_login(client)
+
+    return AuthClient(client, user, leagues=True)
+
 class Helpers:
     @staticmethod
     def register_user(client):
@@ -114,32 +172,3 @@ class Helpers:
 @pytest.fixture
 def helpers():
     return Helpers
-
-@pytest.fixture
-def auth_client(client, helpers):
-    user = helpers.full_login(client)
-
-    class AuthClient:
-        def __init__(self, client, user):
-            self.client = client
-            self.user = user
-
-        def request(self, method, url, **kwargs):
-            headers = kwargs.pop("headers", {})
-            headers.update(helpers.auth_headers(self.user))
-            return self.client.request(method, url, headers=headers, **kwargs)
-        
-        def get(self, url, **kwargs):
-            return self.request("GET", url, **kwargs)
-        
-        def post(self, url, **kwargs):
-            print(f"posting to {url} with kwargs {kwargs}")
-            return self.request("POST", url, **kwargs)
-
-        def put(self, url, **kwargs):
-            return self.request("PUT", url, **kwargs)
-
-        def delete(self, url, **kwargs):
-            return self.request("DELETE", url, **kwargs)
-    
-    return AuthClient(client, user)
