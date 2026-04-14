@@ -71,3 +71,9 @@ def get_current_user(
         raise CREDENTIALS_EXCEPTION
     
     return user
+
+def get_current_league(
+        user: models.User = Depends(get_current_user),
+        db: Session = Depends(get_db)
+) -> models.League:
+    # fill later

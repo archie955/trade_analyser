@@ -50,3 +50,4 @@ class Leagues(BaseModel):
     leagues: List[LeagueOut]
 
 # TEAMS
+
