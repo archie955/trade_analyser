@@ -28,6 +28,8 @@ def create_league(
 
     return schemas.LeagueOut.model_validate(db_league)
 
+
+
 @router.get("/", status_code=status.HTTP_200_OK, response_model=schemas.Leagues)
 def get_leagues(
     db: Session = Depends(get_db),
@@ -38,6 +40,8 @@ def get_leagues(
     league_list = [schemas.LeagueOut.model_validate(league) for league in leagues]
 
     return schemas.Leagues(leagues=league_list)
+
+
 
 @router.put("/", status_code=status.HTTP_200_OK, response_model=schemas.LeagueOut)
 def update_league_info(
@@ -62,6 +66,8 @@ def update_league_info(
     db.refresh(league_to_update)
     
     return schemas.LeagueOut.model_validate(league_to_update)
+
+
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_league(
