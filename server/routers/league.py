@@ -12,7 +12,9 @@ def create_league(
     db: Session = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
-    already_exists = db.query(models.League).filter(models.League.name == league.name).first()
+    already_exists = db.query(models.League).filter(
+        models.League.name == league.name,
+        models.League.user_id == user.id).first()
 
     if already_exists:
         raise HTTPException(

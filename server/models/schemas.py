@@ -51,3 +51,15 @@ class Leagues(BaseModel):
 
 # TEAMS
 
+class TeamCreate(BaseModel):
+    name: str
+
+class TeamOut(TeamCreate):
+    id: int
+    league_id: int
+    created_at: datetime
+    updated_at: datetime
+    model_config = config
+
+class Teams(BaseModel):
+    teams: List[TeamOut]
