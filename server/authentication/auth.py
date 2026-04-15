@@ -77,10 +77,11 @@ def get_current_league(
         user: models.User = Depends(get_current_user),
         db: Session = Depends(get_db)
 ) -> models.League:
+    
     league = db.query(models.League).filter(
         models.League.user_id == user.id,
         models.League.id == league_id).first()
-    
+
     if not league:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

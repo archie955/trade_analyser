@@ -49,8 +49,6 @@ def test_get_leagues(auth_client_leagues):
     assert response.status_code == 200
     data = response.json()["leagues"]
 
-    print(data)
-
     assert len(data) == 2
     assert "created_at" in data[0]
     assert "id" in data[0]
@@ -182,6 +180,12 @@ def test_delete_league_no_auth(auth_client_leagues):
     )
 
     assert response.status_code == 401
+
+    updated_leagues = auth_client_leagues.get(
+        "/leagues/"
+    ).json()["leagues"]
+
+    assert len(leagues) == len(updated_leagues)
 
 def test_delete_league_wrong_id(auth_client_leagues):
     leagues = auth_client_leagues.get(

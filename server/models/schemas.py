@@ -37,14 +37,13 @@ class TokenData(BaseModel):
 class LeagueCreate(BaseModel):
     name: str
 
-class LeagueOut(LeagueCreate):
+class LeagueUpdate(LeagueCreate):
     id: int
+
+class LeagueOut(LeagueUpdate):
     created_at: datetime
     updated_at: datetime
     model_config = config
-
-class LeagueUpdate(LeagueCreate):
-    id: int
 
 class Leagues(BaseModel):
     leagues: List[LeagueOut]
@@ -54,8 +53,10 @@ class Leagues(BaseModel):
 class TeamCreate(BaseModel):
     name: str
 
-class TeamOut(TeamCreate):
+class TeamUpdate(TeamCreate):
     id: int
+
+class TeamOut(TeamUpdate):
     league_id: int
     created_at: datetime
     updated_at: datetime

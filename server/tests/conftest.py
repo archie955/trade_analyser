@@ -41,12 +41,16 @@ def client(db):
     app.dependency_overrides.clear()
 
 class AuthClient:
-    def __init__(self, client, user, leagues=False):
+    def __init__(self, client, user, leagues=False, teams=False):
         self.client = client
         self.user = user
         if leagues:
             self.post("/leagues/", json={"name": "league_1"})
             self.post("/leagues/", json={"name": "league_2"})
+
+        if leagues and teams:
+            self.post("/teams/1", json={"name": "team_1"})
+            self.post("/teams/1", json={"name": "team_2"})
 
     def auth_headers(self, expired=False):
         token = self.user["access_token"]
@@ -65,7 +69,6 @@ class AuthClient:
         return self.request("GET", url, **kwargs)
     
     def post(self, url, **kwargs):
-        print(f"posting to {url} with kwargs {kwargs}")
         return self.request("POST", url, **kwargs)
     
     def put(self, url, **kwargs):
@@ -97,6 +100,12 @@ def auth_client_leagues(client, helpers):
     user = helpers.full_login(client)
 
     return AuthClient(client, user, leagues=True)
+
+@pytest.fixture
+def auth_client_teams(client, helpers):
+    user = helpers.full_login(client)
+
+    return AuthClient(client, user, leagues=True, teams=True)
 
 class Helpers:
     @staticmethod
