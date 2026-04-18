@@ -89,3 +89,22 @@ def get_current_league(
         )
     
     return league
+
+def get_current_team(
+        team_id: int = Path(..., description="ID of the team"),
+        league: models.League = Depends(get_current_league),
+        db: Session = Depends(get_db)
+) -> models.Team:
+    
+    team = db.query(models.Team).filter(
+        models.Team.id == team_id,
+        models.Team.league_id == league.id
+    ).first()
+
+    if not team:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Team with id {team_id} not found"
+        )
+
+    return team

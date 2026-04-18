@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional, List
 from datetime import datetime
+import datatypes
 
 config = ConfigDict(from_attributes=True)
 
@@ -64,3 +65,19 @@ class TeamOut(TeamUpdate):
 
 class Teams(BaseModel):
     teams: List[TeamOut]
+
+# PLAYERS
+
+class PlayerOut(BaseModel):
+    id: int
+    name: str
+    team: datatypes.Teams
+    position: datatypes.Positions
+    points_ppr: float
+    points_halfppr: float
+    points_noppr: float
+    model_config = config
+
+class TeamPlayers(BaseModel):
+    players: List[PlayerOut]
+    model_config = config
