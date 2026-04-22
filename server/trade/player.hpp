@@ -1,5 +1,7 @@
+#pragma once
+
 #include <string>
-#include "position.hpp"
+#include "enums.hpp"
 
 struct Player {
     int id;
@@ -7,11 +9,12 @@ struct Player {
     double points;
     Position pos;
 
-    Player(int id, std::string name, double points, Position pos;) {
+    Player(int id, std::string name, double points, std::string pos;) {
         this->id = id;
         this->name = name;
         this->points = points;
-        this->pos = pos;
+        this->pos = string_to_enum(pos);
     }
 };
+
 
