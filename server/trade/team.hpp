@@ -4,6 +4,7 @@
 #include <vector>
 #include "player.hpp"
 #include <algorithm>
+#include <stdexcept>
 
 // figure out the design pattern - players, lineup vs lineup vs players, starters, bench vs starters, bench vs just players
 
@@ -39,7 +40,7 @@ struct Team {
         this->sort();
     }
 
-    double projected_points() const {
+    void projected_points() {
         double total = 0.0;
         std::unordered_map<SlotType, int> check;
         for (const auto& p: this->players) {
@@ -68,6 +69,7 @@ struct Team {
                 return p;
             }
         }
+        throw std::runtime_error("QB not found")
     }
 
     Player& te() const {
@@ -76,6 +78,7 @@ struct Team {
                 return p;
             }
         }
+        throw std::runtime_error("TE not found")
     }
 
     Player& dst() const {
@@ -84,6 +87,7 @@ struct Team {
                 return p;
             }
         }
+        throw std::runtime_error("DST not found")
     }
 
     Player& k() const {
@@ -92,6 +96,7 @@ struct Team {
                 return p;
             }
         }
+        throw std::runtime_error("K not found")
     }
 
     Player& rb1() const {
@@ -100,6 +105,7 @@ struct Team {
                 return p;
             }
         }
+        throw std::runtime_error("RB1 not found")
     }
 
     Player& rb2() const {
@@ -112,6 +118,7 @@ struct Team {
                 accept = true;
             }
         }
+        throw std::runtime_error("RB2 not found")
     }
 
     Player& wr1() const {
@@ -120,6 +127,7 @@ struct Team {
                 return p;
             }
         }
+        throw std::runtime_error("WR1 not found")
     }
 
     Player& wr2() const {
@@ -132,6 +140,7 @@ struct Team {
                 accept = true;
             }
         }
+        throw std::runtime_error("WR2 not found")
     }
 
     Player& flex() const {
@@ -150,6 +159,7 @@ struct Team {
                 wr_count += 1;
             }
         }
+        throw std::runtime_error("FLEX not found")
     }
 };
 
@@ -157,7 +167,7 @@ inline std::vector<double> trade(Team team1, Team team2, const Player& p1, const
     double points1 = -1 * team1->points;
     double points2 = -1 * team2->points;
     team1->remove_player(p1);
-    team2->temove_player(p2);
+    team2->remove_player(p2);
     team1->add_player(p2);
     team2->add_player(p1);
     points1 += team1->points;
@@ -169,9 +179,9 @@ inline std::vector<double> two_trade(Team team1, Team team2, const Player& p1, c
     double points1 = -1 * team1->points;
     double points2 = -1 * team2->points;
     team1->remove_player(p1);
-    team1->temove_player(p2);
+    team1->remove_player(p2);
     team2->remove_player(p3);
-    team2->temove_player(p4);
+    team2->remove_player(p4);
     team1->add_player(p3);
     team1->add_player(p4);
     team2->add_player(p1);
@@ -271,6 +281,7 @@ inline Player& player_from_slottype(const Team& team, const SlotType& type) {
         case SlotType::FLEX:
             return team->flex();
     }
+    std::runtime_error("Player not found") 
 }
 
 inline std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, double>> evaluate_trades (const Team& t1, const Team& t2) {
@@ -297,9 +308,9 @@ inline std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, 
     int n2 = b_players.size();
 
     for (int i = 0; i < n1 - 1; ++i) {
-        for (int j = i+1; j < n1, ++j) {
+        for (int j = i+1; j < n1; ++j) {
             for (int k = 0; k < n2 - 1; ++k) {
-                for (int l = 0; l < n2; ++l) {
+                for (int l = k+1; l < n2; ++l) {
                     double_trade_combos.emplace_back(std::make_tuple(a_players[i], a_players[j], b_players[k], b_players[l]));
                 }
             }
@@ -311,14 +322,14 @@ inline std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, 
     for (const auto& single: single_trade_combos) {
         std::vector<double> trade_points = trade(t1, t2, single[0], single[1]);
         if (trade_points[0] >= 0 && trade_points[1] >= 0) {
-            res.emplace_back(std::make_tuple(std::vector<Player>{single[0]}, trade_points[0], std::vector<Player>{single[1]}, trade_points[1]));
+            res.emplace_back(std::make_tuple(std::vector<Player>{std::get<0>(single)}, trade_points[0], std::vector<Player>{std::get<1>(single)}, trade_points[1]));
         }
     }
 
     for (const auto& double_trade: double_trade_combos) {
         std::vector<double> trade_points = two_trade(t1, t2, double_trade[0], double_trade[1], double_trade[2], double_trade[3]);
         if (trade_points[0] >= 0 && trade_points[1] >= 0) {
-            res.emplace_back(std::make_tuple(std::vector<Player>{double_trade[0], double_trade[1]}, trade_points[0], std::vector<Player>{double_trade[2], double_trade[3]}, trade_points[1]));
+            res.emplace_back(std::make_tuple(std::vector<Player>{std::get<0>(double_trade), std::get<1>(double_trade)}, trade_points[0], std::vector<Player>{std::get<2>(double_trade), std::get<3>(double_trade)}, trade_points[1]));
         }
     }
 

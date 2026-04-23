@@ -46,4 +46,5 @@ SlotType string_to_enum(const std::string& pos) {
         case "K":
             return SlotType::K;
     }
+    return SlotType::BENCH;
 }
