@@ -7,7 +7,7 @@ struct Player {
     int id;
     std::string name;
     double points;
-    Position pos;
+    SlotType pos;
 
     Player(int id, std::string name, double points, std::string pos;) {
         this->id = id;

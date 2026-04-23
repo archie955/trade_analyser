@@ -19,27 +19,31 @@ enum class SlotType {
     DST,
     K,
     FLEX,
-    BENCH
+    BENCH,
+    RB1,
+    RB2,
+    WR1,
+    WR2
 };
 
-Position string_to_enum(const std::string& pos) {
+SlotType string_to_enum(const std::string& pos) {
     switch (pos) {
         case "QB":
-            return Position::QB;
+            return SlotType::QB;
         
         case "RB":
-            return Position::RB;
+            return SlotType::RB;
         
         case "WR":
-            return Position::WR;
+            return SlotType::WR;
 
         case "TE":
-            return Position::TE;
+            return SlotType::TE;
         
         case "DST":
-            return Position::DST;
+            return SlotType::DST;
         
         case "K":
-            return Position::K;
+            return SlotType::K;
     }
 }
