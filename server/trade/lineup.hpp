@@ -90,5 +90,11 @@ struct LineUp {
         this->projectedScore();
     }
 
+    void reoptimise_position(const SlotType& type) {
+        switch (type) {
+            case SlotType::QB:
+                
+        }
+    }
 }
 
