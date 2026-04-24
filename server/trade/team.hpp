@@ -66,7 +66,7 @@ struct Team {
         this->points = total;
     }
 
-    std::optional<std::reference_wrapper<const Player>> qb() const {
+    const std::optional<std::reference_wrapper<const Player>> qb() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::QB) {
                 return p;
@@ -75,7 +75,7 @@ struct Team {
         return std::nullopt;
     }
 
-    std::optional<std::reference_wrapper<const Player>> te() const {
+    const std::optional<std::reference_wrapper<const Player>> te() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::TE) {
                 return p;
@@ -84,7 +84,7 @@ struct Team {
         return std::nullopt;
     }
 
-    std::optional<std::reference_wrapper<const Player>> dst() const {
+    const std::optional<std::reference_wrapper<const Player>> dst() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::DST) {
                 return p;
@@ -93,7 +93,7 @@ struct Team {
         return std::nullopt;
     }
 
-    std::optional<std::reference_wrapper<const Player>> k() const {
+    const std::optional<std::reference_wrapper<const Player>> k() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::K) {
                 return p;
@@ -102,7 +102,7 @@ struct Team {
         return std::nullopt;
     }
 
-    std::optional<std::reference_wrapper<const Player>> rb1() const {
+    const std::optional<std::reference_wrapper<const Player>> rb1() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::RB) {
                 return p;
@@ -111,7 +111,7 @@ struct Team {
         return std::nullopt;
     }
 
-    std::optional<std::reference_wrapper<const Player>> rb2() const {
+    const std::optional<std::reference_wrapper<const Player>> rb2() const {
         bool accept = false;
         for (const auto& p: this->players) {
             if (p.pos == SlotType::RB) {
@@ -124,7 +124,7 @@ struct Team {
         return std::nullopt;
     }
 
-    std::optional<std::reference_wrapper<const Player>> wr1() const {
+    const std::optional<std::reference_wrapper<const Player>> wr1() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::WR) {
                 return p;
@@ -133,7 +133,7 @@ struct Team {
         return std::nullopt;
     }
 
-    std::optional<std::reference_wrapper<const Player>> wr2() const {
+    const std::optional<std::reference_wrapper<const Player>> wr2() const {
         bool accept = false;
         for (const auto& p: this->players) {
             if (p.pos == SlotType::WR) {
@@ -146,7 +146,7 @@ struct Team {
         return std::nullopt;
     }
 
-    std::optional<std::reference_wrapper<const Player>> flex() const {
+    const std::optional<std::reference_wrapper<const Player>> flex() const {
         int wr_count = 0;
         int rb_count = 0;
         for (const auto& p: this->players) {
@@ -208,7 +208,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     auto t1_qb = t1.qb();
     auto t2_qb = t2.qb();
     if (t1_qb && t2_qb) {
-        if (t1_qb.points >= t2_qb.points) {
+        if (t1_qb->get().points >= t2_qb->get().points) {
             a.emplace_back(SlotType::QB);
         } else {
             b.emplace_back(SlotType::QB);
@@ -218,7 +218,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     auto t1_wr1 = t1.wr1();
     auto t2_wr1 = t2.wr1();
     if (t1_wr1 && t2_wr1) {
-        if (t1_wr1.points >= t2_wr1.points) {
+        if (t1_wr1->get().points >= t2_wr1->get().points) {
             a.emplace_back(SlotType::WR1);
         } else {
             b.emplace_back(SlotType::WR1);
@@ -228,7 +228,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     auto t1_wr2 = t1.wr2();
     auto t2_wr2 = t2.wr2();
     if (t1_wr2 && t2_wr2) {
-        if (t1_wr2.points >= t2_wr2.points) {
+        if (t1_wr2->get().points >= t2_wr2->get().points) {
             a.emplace_back(SlotType::WR2);
         } else {
             b.emplace_back(SlotType::WR2);
@@ -238,7 +238,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     auto t1_rb1 = t1.rb1();
     auto t2_rb1 = t2.rb1();
     if (t1_rb1 && t2_rb1) {
-        if (t1_rb1.points >= t2_rb1.points) {
+        if (t1_rb1->get().points >= t2_rb1->get().points) {
             a.emplace_back(SlotType::RB1);
         } else {
             b.emplace_back(SlotType::RB1);
@@ -248,7 +248,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     auto t1_rb2 = t1.rb2();
     auto t2_rb2 = t2.rb2();
     if (t1_rb2 && t2_rb2) {
-        if (t1_rb2.points >= t2_rb2.points) {
+        if (t1_rb2->get().points >= t2_rb2->get().points) {
             a.emplace_back(SlotType::RB2);
         } else {
             b.emplace_back(SlotType::RB2);
@@ -258,7 +258,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     auto t1_te = t1.te();
     auto t2_te = t2.te();
     if (t1_te && t2_te) {
-        if (t1_te.points >= t2_te.points) {
+        if (t1_te->get().points >= t2_te->get().points) {
             a.emplace_back(SlotType::TE);
         } else {
             b.emplace_back(SlotType::TE);
@@ -268,7 +268,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     auto t1_dst = t1.dst();
     auto t2_dst = t2.dst();
     if (t1_dst && t2_dst) {
-        if (t1_dst.points >= t2_dst.points) {
+        if (t1_dst->get().points >= t2_dst->get().points) {
             a.emplace_back(SlotType::DST);
         } else {
             b.emplace_back(SlotType::DST);
@@ -278,7 +278,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     auto t1_k = t1.k();
     auto t2_k = t2.k();
     if (t1_k && t2_k) {
-        if (t1_k.points >= t2_k.points) {
+        if (t1_k->get().points >= t2_k->get().points) {
             a.emplace_back(SlotType::K);
         } else {
             b.emplace_back(SlotType::K);
@@ -288,7 +288,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     return {a, b};
 }
 
-inline const Player& player_from_slottype(const Team& team, const SlotType& type) {
+inline const std::optional<std::reference_wrapper<const Player>> player_from_slottype(const Team& team, const SlotType& type) {
     switch (type) {
         case SlotType::QB:
             return team.qb();
@@ -327,10 +327,16 @@ inline std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, 
     std::vector<Player> a_players;
     std::vector<Player> b_players;
     for (const SlotType& type: a_lev) {
-        a_players.emplace_back(player_from_slottype(t1, type));
+        auto p = player_from_slottype(t1, type);
+        if (p) {
+            a_players.emplace_back(p->get());
+        }
     }
     for (const SlotType& type: b_lev) {
-        b_players.emplace_back(player_from_slottype(t2, type));
+        auto p = player_from_slottype(t2, type);
+        if (p) {
+            b_players.emplace_back(p->get());
+        }
     }
 
     std::vector<std::tuple<Player, Player>> single_trade_combos;
@@ -354,6 +360,7 @@ inline std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, 
     }
 
     std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, double>> res;
+    
 
     for (const auto& single: single_trade_combos) {
         std::vector<double> trade_points = trade(t1, t2, std::get<0>(single), std::get<1>(single));
