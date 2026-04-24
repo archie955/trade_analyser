@@ -64,52 +64,52 @@ struct Team {
         this->points = total;
     }
 
-    Player& qb() const {
+    const Player& qb() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::QB) {
                 return p;
             }
         }
-        throw std::runtime_error("QB not found")
+        throw std::runtime_error("QB not found");
     }
 
-    Player& te() const {
+    const Player& te() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::TE) {
                 return p;
             }
         }
-        throw std::runtime_error("TE not found")
+        throw std::runtime_error("TE not found");
     }
 
-    Player& dst() const {
+    const Player& dst() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::DST) {
                 return p;
             }
         }
-        throw std::runtime_error("DST not found")
+        throw std::runtime_error("DST not found");
     }
 
-    Player& k() const {
+    const Player& k() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::K) {
                 return p;
             }
         }
-        throw std::runtime_error("K not found")
+        throw std::runtime_error("K not found");
     }
 
-    Player& rb1() const {
+    const Player& rb1() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::RB) {
                 return p;
             }
         }
-        throw std::runtime_error("RB1 not found")
+        throw std::runtime_error("RB1 not found");
     }
 
-    Player& rb2() const {
+    const Player& rb2() const {
         bool accept = false;
         for (const auto& p: this->players) {
             if (p.pos == SlotType::RB) {
@@ -119,19 +119,19 @@ struct Team {
                 accept = true;
             }
         }
-        throw std::runtime_error("RB2 not found")
+        throw std::runtime_error("RB2 not found");
     }
 
-    Player& wr1() const {
+    const Player& wr1() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::WR) {
                 return p;
             }
         }
-        throw std::runtime_error("WR1 not found")
+        throw std::runtime_error("WR1 not found");
     }
 
-    Player& wr2() const {
+    const Player& wr2() const {
         bool accept = false;
         for (const auto& p: this->players) {
             if (p.pos == SlotType::WR) {
@@ -141,10 +141,10 @@ struct Team {
                 accept = true;
             }
         }
-        throw std::runtime_error("WR2 not found")
+        throw std::runtime_error("WR2 not found");
     }
 
-    Player& flex() const {
+    const Player& flex() const {
         int wr_count = 0;
         int rb_count = 0;
         for (const auto& p: this->players) {
@@ -160,7 +160,7 @@ struct Team {
                 wr_count += 1;
             }
         }
-        throw std::runtime_error("FLEX not found")
+        throw std::runtime_error("FLEX not found");
     }
 };
 
@@ -265,7 +265,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
     return std::vector<std::vector<SlotType>> res = {a, b};
 }
 
-inline Player& player_from_slottype(const Team& team, const SlotType& type) {
+inline const Player& player_from_slottype(const Team& team, const SlotType& type) {
     switch (type) {
         case SlotType::QB:
             return team.qb();
