@@ -164,7 +164,7 @@ struct Team {
     }
 };
 
-inline std::vector<double> trade(Team& team1, Team& team2, const Player& p1, const Player& p2) {
+inline std::vector<double> trade(Team team1, Team team2, const Player& p1, const Player& p2) {
     double points1 = -1 * team1.points;
     double points2 = -1 * team2.points;
     team1.remove_player(p1);
@@ -173,14 +173,10 @@ inline std::vector<double> trade(Team& team1, Team& team2, const Player& p1, con
     team2.add_player(p1);
     points1 += team1.points;
     points2 += team2.points;
-    team1.remove_player(p2);
-    team2.remove_player(p1);
-    team1.add_player(p1);
-    team2.add_player(p2);
     return {points1, points2};
 }
 
-inline std::vector<double> two_trade(Team& team1, Team& team2, const Player& p1, const Player& p2, const Player& p3, const Player& p4) {
+inline std::vector<double> two_trade(Team team1, Team team2, const Player& p1, const Player& p2, const Player& p3, const Player& p4) {
     double points1 = -1 * team1.points;
     double points2 = -1 * team2.points;
     team1.remove_player(p1);
@@ -193,14 +189,6 @@ inline std::vector<double> two_trade(Team& team1, Team& team2, const Player& p1,
     team2.add_player(p2);
     points1 += team1.points;
     points2 += team2.points;
-    team1.remove_player(p3);
-    team1.remove_player(p4);
-    team2.remove_player(p1);
-    team2.remove_player(p2);
-    team1.add_player(p1);
-    team1.add_player(p2);
-    team2.add_player(p3);
-    team2.add_player(p4);
     return {points1, points2};
 }
 
@@ -333,14 +321,14 @@ inline std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, 
     std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, double>> res;
 
     for (const auto& single: single_trade_combos) {
-        std::vector<double> trade_points = trade(t1, t2, single[0], single[1]);
+        std::vector<double> trade_points = trade(t1, t2, std::get<0>(single), std::get<1>(single));
         if (trade_points[0] >= 0 && trade_points[1] >= 0) {
             res.emplace_back(std::make_tuple(std::vector<Player>{std::get<0>(single)}, trade_points[0], std::vector<Player>{std::get<1>(single)}, trade_points[1]));
         }
     }
 
     for (const auto& double_trade: double_trade_combos) {
-        std::vector<double> trade_points = two_trade(t1, t2, double_trade[0], double_trade[1], double_trade[2], double_trade[3]);
+        std::vector<double> trade_points = two_trade(t1, t2, std::get<0>(double_trade), std::get<1>(double_trade), std::get<2>(double_trade), std::get<3>(double_trade));
         if (trade_points[0] >= 0 && trade_points[1] >= 0) {
             res.emplace_back(std::make_tuple(std::vector<Player>{std::get<0>(double_trade), std::get<1>(double_trade)}, trade_points[0], std::vector<Player>{std::get<2>(double_trade), std::get<3>(double_trade)}, trade_points[1]));
         }
