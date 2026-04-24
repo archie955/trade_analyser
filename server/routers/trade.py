@@ -17,7 +17,7 @@ data = {
 }
 
 proc = subprocess.Popen(
-    ["./trade_sim"],
+    ["./server/routers/sim_trades"],
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     text=True

@@ -6,6 +6,8 @@
 #include "player.hpp"
 #include <algorithm>
 #include <stdexcept>
+#include <optional>
+#include <functional>
 
 // figure out the design pattern - players, lineup vs lineup vs players, starters, bench vs starters, bench vs just players
 
@@ -64,52 +66,52 @@ struct Team {
         this->points = total;
     }
 
-    const Player& qb() const {
+    std::optional<std::reference_wrapper<const Player>> qb() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::QB) {
                 return p;
             }
         }
-        throw std::runtime_error("QB not found");
+        return std::nullopt;
     }
 
-    const Player& te() const {
+    std::optional<std::reference_wrapper<const Player>> te() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::TE) {
                 return p;
             }
         }
-        throw std::runtime_error("TE not found");
+        return std::nullopt;
     }
 
-    const Player& dst() const {
+    std::optional<std::reference_wrapper<const Player>> dst() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::DST) {
                 return p;
             }
         }
-        throw std::runtime_error("DST not found");
+        return std::nullopt;
     }
 
-    const Player& k() const {
+    std::optional<std::reference_wrapper<const Player>> k() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::K) {
                 return p;
             }
         }
-        throw std::runtime_error("K not found");
+        return std::nullopt;
     }
 
-    const Player& rb1() const {
+    std::optional<std::reference_wrapper<const Player>> rb1() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::RB) {
                 return p;
             }
         }
-        throw std::runtime_error("RB1 not found");
+        return std::nullopt;
     }
 
-    const Player& rb2() const {
+    std::optional<std::reference_wrapper<const Player>> rb2() const {
         bool accept = false;
         for (const auto& p: this->players) {
             if (p.pos == SlotType::RB) {
@@ -119,19 +121,19 @@ struct Team {
                 accept = true;
             }
         }
-        throw std::runtime_error("RB2 not found");
+        return std::nullopt;
     }
 
-    const Player& wr1() const {
+    std::optional<std::reference_wrapper<const Player>> wr1() const {
         for (const auto& p: this->players) {
             if (p.pos == SlotType::WR) {
                 return p;
             }
         }
-        throw std::runtime_error("WR1 not found");
+        return std::nullopt;
     }
 
-    const Player& wr2() const {
+    std::optional<std::reference_wrapper<const Player>> wr2() const {
         bool accept = false;
         for (const auto& p: this->players) {
             if (p.pos == SlotType::WR) {
@@ -141,10 +143,10 @@ struct Team {
                 accept = true;
             }
         }
-        throw std::runtime_error("WR2 not found");
+        return std::nullopt;
     }
 
-    const Player& flex() const {
+    std::optional<std::reference_wrapper<const Player>> flex() const {
         int wr_count = 0;
         int rb_count = 0;
         for (const auto& p: this->players) {
@@ -160,7 +162,7 @@ struct Team {
                 wr_count += 1;
             }
         }
-        throw std::runtime_error("FLEX not found");
+        return std::nullopt;
     }
 };
 
