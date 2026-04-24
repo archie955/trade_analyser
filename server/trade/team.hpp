@@ -177,7 +177,7 @@ inline std::vector<double> trade(Team& team1, Team& team2, const Player& p1, con
     team2.remove_player(p1);
     team1.add_player(p1);
     team2.add_player(p2);
-    return std::vector<double> res = {points1, points2};
+    return {points1, points2};
 }
 
 inline std::vector<double> two_trade(Team& team1, Team& team2, const Player& p1, const Player& p2, const Player& p3, const Player& p4) {
@@ -201,7 +201,7 @@ inline std::vector<double> two_trade(Team& team1, Team& team2, const Player& p1,
     team1.add_player(p2);
     team2.add_player(p3);
     team2.add_player(p4);
-    return std::vector<double> res = {points1, points2};
+    return {points1, points2};
 }
 
 inline double points_over_replacement(Team team, const Player& p) {
@@ -262,7 +262,7 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
         b.emplace_back(SlotType::K);
     }
     
-    return std::vector<std::vector<SlotType>> res = {a, b};
+    return {a, b};
 }
 
 inline const Player& player_from_slottype(const Team& team, const SlotType& type) {
