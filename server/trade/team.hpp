@@ -2,6 +2,7 @@
 
 #include <tuple>
 #include <vector>
+#include <unordered_map>
 #include "player.hpp"
 #include <algorithm>
 #include <stdexcept>
