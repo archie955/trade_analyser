@@ -27,7 +27,7 @@ struct Team {
     void remove_player(const Player& player) {
         int n = this->players.size();
         for (int i = 0; i < n; ++i) {
-            if (this->players[i]->id == player->id) {
+            if (this->players[i].id == player.id) {
                 this->players.erase(this->players.begin() + i);
                 break;
             }
@@ -44,19 +44,19 @@ struct Team {
         double total = 0.0;
         std::unordered_map<SlotType, int> check;
         for (const auto& p: this->players) {
-            SlotType type = p->pos;
+            SlotType type = p.pos;
             if (type == SlotType::WR || type == SlotType::RB) {
                 if (check[pos] < 2) {
                     check[pos] += 1;
-                    total += p->points;
+                    total += p.points;
                 } else if (check[SlotType::FLEX] < 1) {
                     check[SlotType::FLEX] = 1;
-                    total += p->points;
+                    total += p.points;
                 }
             } else {
                 if (check[pos] == 0) {
                     check[pos] = 1;
-                    total += p->points;
+                    total += p.points;
                 }
             }
         }
@@ -65,7 +65,7 @@ struct Team {
 
     Player& qb() const {
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::QB) {
+            if (p.pos == SlotType::QB) {
                 return p;
             }
         }
@@ -74,7 +74,7 @@ struct Team {
 
     Player& te() const {
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::TE) {
+            if (p.pos == SlotType::TE) {
                 return p;
             }
         }
@@ -83,7 +83,7 @@ struct Team {
 
     Player& dst() const {
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::DST) {
+            if (p.pos == SlotType::DST) {
                 return p;
             }
         }
@@ -92,7 +92,7 @@ struct Team {
 
     Player& k() const {
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::K) {
+            if (p.pos == SlotType::K) {
                 return p;
             }
         }
@@ -101,7 +101,7 @@ struct Team {
 
     Player& rb1() const {
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::RB) {
+            if (p.pos == SlotType::RB) {
                 return p;
             }
         }
@@ -111,7 +111,7 @@ struct Team {
     Player& rb2() const {
         bool accept = false;
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::RB) {
+            if (p.pos == SlotType::RB) {
                 if (accept) {
                     return p;
                 } 
@@ -123,7 +123,7 @@ struct Team {
 
     Player& wr1() const {
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::WR) {
+            if (p.pos == SlotType::WR) {
                 return p;
             }
         }
@@ -133,7 +133,7 @@ struct Team {
     Player& wr2() const {
         bool accept = false;
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::WR) {
+            if (p.pos == SlotType::WR) {
                 if (accept) {
                     return p;
                 } 
@@ -147,12 +147,12 @@ struct Team {
         int wr_count = 0;
         int rb_count = 0;
         for (const auto& p: this->players) {
-            if (p->pos == SlotType::RB) {
+            if (p.pos == SlotType::RB) {
                 if (rb_count == 2) {
                     return p;
                 }
                 rb_count += 1;
-            } else if (p->pos == SlotType::WR) {
+            } else if (p.pos == SlotType::WR) {
                 if (wr_count == 2) {
                     return p;
                 }
@@ -163,87 +163,99 @@ struct Team {
     }
 };
 
-inline std::vector<double> trade(Team team1, Team team2, const Player& p1, const Player& p2) {
-    double points1 = -1 * team1->points;
-    double points2 = -1 * team2->points;
-    team1->remove_player(p1);
-    team2->remove_player(p2);
-    team1->add_player(p2);
-    team2->add_player(p1);
-    points1 += team1->points;
-    points2 += team2->points;
+inline std::vector<double> trade(Team& team1, Team& team2, const Player& p1, const Player& p2) {
+    double points1 = -1 * team1.points;
+    double points2 = -1 * team2.points;
+    team1.remove_player(p1);
+    team2.remove_player(p2);
+    team1.add_player(p2);
+    team2.add_player(p1);
+    points1 += team1.points;
+    points2 += team2.points;
+    team1.remove_player(p2);
+    team2.remove_player(p1);
+    team1.add_player(p1);
+    team2.add_player(p2);
     return std::vector<double> res = {points1, points2};
 }
 
-inline std::vector<double> two_trade(Team team1, Team team2, const Player& p1, const Player& p2, const Player& p3, const Player& p4) {
-    double points1 = -1 * team1->points;
-    double points2 = -1 * team2->points;
-    team1->remove_player(p1);
-    team1->remove_player(p2);
-    team2->remove_player(p3);
-    team2->remove_player(p4);
-    team1->add_player(p3);
-    team1->add_player(p4);
-    team2->add_player(p1);
-    team2->add_player(p2);
-    points1 += team1->points;
-    points2 += team2->points;
+inline std::vector<double> two_trade(Team& team1, Team& team2, const Player& p1, const Player& p2, const Player& p3, const Player& p4) {
+    double points1 = -1 * team1.points;
+    double points2 = -1 * team2.points;
+    team1.remove_player(p1);
+    team1.remove_player(p2);
+    team2.remove_player(p3);
+    team2.remove_player(p4);
+    team1.add_player(p3);
+    team1.add_player(p4);
+    team2.add_player(p1);
+    team2.add_player(p2);
+    points1 += team1.points;
+    points2 += team2.points;
+    team1.remove_player(p3);
+    team1.remove_player(p4);
+    team2.remove_player(p1);
+    team2.remove_player(p2);
+    team1.add_player(p1);
+    team1.add_player(p2);
+    team2.add_player(p3);
+    team2.add_player(p4);
     return std::vector<double> res = {points1, points2};
 }
 
 inline double points_over_replacement(Team team, const Player& p) {
-    double old_points = team->points;
+    double old_points = team.points;
     team.remove_player(p);
-    double new_points = team->points;
+    double new_points = team.points;
     return old_points - new_points;
 }
 
 inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, const Team& t2) {
     std::vector<SlotType> a;
     std::vector<SlotType> b;
-    if (t1->qb()->points >= t2->qb()->points) {
+    if (t1.qb().points >= t2.qb().points) {
         a.emplace_back(SlotType::QB);
     } else {
         b.emplace_back(SlotType::QB);
     }
     
-    if (t1->wr1()->points >= t2->wr1()->points) {
+    if (t1.wr1().points >= t2.wr1().points) {
         a.emplace_back(SlotType::WR1);
     } else {
         b.emplace_back(SlotType::WR1);
     }
     
-    if (t1->wr2()->points >= t2->wr2()->points) {
+    if (t1.wr2().points >= t2.wr2().points) {
         a.emplace_back(SlotType::WR2);
     } else {
         b.emplace_back(SlotType::WR2);
     }
     
-    if (t1->rb1()->points >= t2->rb1()->points) {
+    if (t1.rb1().points >= t2.rb1().points) {
         a.emplace_back(SlotType::RB1);
     } else {
         b.emplace_back(SlotType::RB1);
     }
     
-    if (t1->rb2()->points >= t2->rb2()->points) {
+    if (t1.rb2().points >= t2.rb2().points) {
         a.emplace_back(SlotType::RB2);
     } else {
         b.emplace_back(SlotType::RB2);
     }
     
-    if (t1->te()->points >= t2->te()->points) {
+    if (t1.te().points >= t2.te().points) {
         a.emplace_back(SlotType::TE);
     } else {
         b.emplace_back(SlotType::TE);
     }
     
-    if (t1->dst()->points >= t2->dst()->points) {
+    if (t1.dst().points >= t2.dst().points) {
         a.emplace_back(SlotType::DST);
     } else {
         b.emplace_back(SlotType::DST);
     }
     
-    if (t1->k()->points >= t2->k()->points) {
+    if (t1.k().points >= t2.k().points) {
         a.emplace_back(SlotType::K);
     } else {
         b.emplace_back(SlotType::K);
@@ -255,31 +267,31 @@ inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, con
 inline Player& player_from_slottype(const Team& team, const SlotType& type) {
     switch (type) {
         case SlotType::QB:
-            return team->qb();
+            return team.qb();
 
         case SlotType::RB1:
-            return team->rb1();
+            return team.rb1();
         
         case SlotType::RB2:
-            return team->rb2();
+            return team.rb2();
 
         case SlotType::WR1:
-            return team->wr1();
+            return team.wr1();
 
         case SlotType::WR2:
-            return team->wr2();
+            return team.wr2();
 
         case SlotType::TE:
-            return team->te();
+            return team.te();
 
         case SlotType::DST:
-            return team->dst();
+            return team.dst();
 
         case SlotType::K:
-            return team->k();
+            return team.k();
 
         case SlotType::FLEX:
-            return team->flex();
+            return team.flex();
     }
     std::runtime_error("Player not found") 
 }
