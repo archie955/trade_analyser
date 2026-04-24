@@ -46,16 +46,16 @@ struct Team {
         for (const auto& p: this->players) {
             SlotType type = p.pos;
             if (type == SlotType::WR || type == SlotType::RB) {
-                if (check[pos] < 2) {
-                    check[pos] += 1;
+                if (check[type] < 2) {
+                    check[type] += 1;
                     total += p.points;
                 } else if (check[SlotType::FLEX] < 1) {
                     check[SlotType::FLEX] = 1;
                     total += p.points;
                 }
             } else {
-                if (check[pos] == 0) {
-                    check[pos] = 1;
+                if (check[type] == 0) {
+                    check[type] = 1;
                     total += p.points;
                 }
             }
