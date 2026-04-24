@@ -20,7 +20,7 @@ struct Team {
 
     void sort() {
         std::sort(this->players.begin(), this->players.end(),
-        [](Player& p1, Player& p2){ return p1.points > p2.points});
+        [](const Player& p1, const Player& p2){ return p1.points > p2.points; });
         this->projected_points();
     }
 
