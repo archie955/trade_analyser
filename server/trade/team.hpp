@@ -294,7 +294,7 @@ inline const Player& player_from_slottype(const Team& team, const SlotType& type
         case SlotType::FLEX:
             return team.flex();
     }
-    std::runtime_error("Player not found") 
+    throw std::runtime_error("Player not found");
 }
 
 inline std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, double>> evaluate_trades (const Team& t1, const Team& t2) {
