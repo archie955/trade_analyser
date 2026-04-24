@@ -204,52 +204,85 @@ inline double points_over_replacement(Team team, const Player& p) {
 inline std::vector<std::vector<SlotType>> identify_leverages(const Team& t1, const Team& t2) {
     std::vector<SlotType> a;
     std::vector<SlotType> b;
-    if (t1.qb().points >= t2.qb().points) {
-        a.emplace_back(SlotType::QB);
-    } else {
-        b.emplace_back(SlotType::QB);
+
+    auto t1_qb = t1.qb();
+    auto t2_qb = t2.qb();
+    if (t1_qb && t2_qb) {
+        if (t1_qb.points >= t2_qb.points) {
+            a.emplace_back(SlotType::QB);
+        } else {
+            b.emplace_back(SlotType::QB);
+        }
+    }
+
+    auto t1_wr1 = t1.wr1();
+    auto t2_wr1 = t2.wr1();
+    if (t1_wr1 && t2_wr1) {
+        if (t1_wr1.points >= t2_wr1.points) {
+            a.emplace_back(SlotType::WR1);
+        } else {
+            b.emplace_back(SlotType::WR1);
+        }
+    }
+
+    auto t1_wr2 = t1.wr2();
+    auto t2_wr2 = t2.wr2();
+    if (t1_wr2 && t2_wr2) {
+        if (t1_wr2.points >= t2_wr2.points) {
+            a.emplace_back(SlotType::WR2);
+        } else {
+            b.emplace_back(SlotType::WR2);
+        }
     }
     
-    if (t1.wr1().points >= t2.wr1().points) {
-        a.emplace_back(SlotType::WR1);
-    } else {
-        b.emplace_back(SlotType::WR1);
+    auto t1_rb1 = t1.rb1();
+    auto t2_rb1 = t2.rb1();
+    if (t1_rb1 && t2_rb1) {
+        if (t1_rb1.points >= t2_rb1.points) {
+            a.emplace_back(SlotType::RB1);
+        } else {
+            b.emplace_back(SlotType::RB1);
+        }
     }
     
-    if (t1.wr2().points >= t2.wr2().points) {
-        a.emplace_back(SlotType::WR2);
-    } else {
-        b.emplace_back(SlotType::WR2);
+    auto t1_rb2 = t1.rb2();
+    auto t2_rb2 = t2.rb2();
+    if (t1_rb2 && t2_rb2) {
+        if (t1_rb2.points >= t2_rb2.points) {
+            a.emplace_back(SlotType::RB2);
+        } else {
+            b.emplace_back(SlotType::RB2);
+        }
     }
     
-    if (t1.rb1().points >= t2.rb1().points) {
-        a.emplace_back(SlotType::RB1);
-    } else {
-        b.emplace_back(SlotType::RB1);
+    auto t1_te = t1.te();
+    auto t2_te = t2.te();
+    if (t1_te && t2_te) {
+        if (t1_te.points >= t2_te.points) {
+            a.emplace_back(SlotType::TE);
+        } else {
+            b.emplace_back(SlotType::TE);
+        }
     }
     
-    if (t1.rb2().points >= t2.rb2().points) {
-        a.emplace_back(SlotType::RB2);
-    } else {
-        b.emplace_back(SlotType::RB2);
+    auto t1_dst = t1.dst();
+    auto t2_dst = t2.dst();
+    if (t1_dst && t2_dst) {
+        if (t1_dst.points >= t2_dst.points) {
+            a.emplace_back(SlotType::DST);
+        } else {
+            b.emplace_back(SlotType::DST);
+        }
     }
     
-    if (t1.te().points >= t2.te().points) {
-        a.emplace_back(SlotType::TE);
-    } else {
-        b.emplace_back(SlotType::TE);
-    }
-    
-    if (t1.dst().points >= t2.dst().points) {
-        a.emplace_back(SlotType::DST);
-    } else {
-        b.emplace_back(SlotType::DST);
-    }
-    
-    if (t1.k().points >= t2.k().points) {
-        a.emplace_back(SlotType::K);
-    } else {
-        b.emplace_back(SlotType::K);
+    auto t1_k = t1.k();
+    auto t2_k = t2.k();
+    if (t1_k && t2_k) {
+        if (t1_k.points >= t2_k.points) {
+            a.emplace_back(SlotType::K);
+        } else {
+            b.emplace_back(SlotType::K);
+        }
     }
     
     return {a, b};
