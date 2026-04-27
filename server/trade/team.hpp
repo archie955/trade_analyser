@@ -316,8 +316,10 @@ inline const std::optional<std::reference_wrapper<const Player>> player_from_slo
 
         case SlotType::FLEX:
             return team.flex();
+        
+        default:
+            return std::nullopt;
     }
-    throw std::runtime_error("Player not found");
 }
 
 inline std::vector<std::tuple<std::vector<Player>, double, std::vector<Player>, double>> evaluate_trades (const Team& t1, const Team& t2) {
