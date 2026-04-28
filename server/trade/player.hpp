@@ -7,13 +7,13 @@ struct Player {
     int id;
     std::string name;
     double points;
-    SlotType pos;
+    SlotType position;
 
-    Player(int id, std::string name, double points, std::string pos) {
+    Player(int id, std::string name, double points, std::string position) {
         this->id = id;
         this->name = name;
         this->points = points;
-        this->pos = string_to_enum(pos);
+        this->position = string_to_enum(position);
     }
 };
 

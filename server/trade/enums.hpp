@@ -26,12 +26,12 @@ enum class SlotType {
     WR2
 };
 
-SlotType string_to_enum(const std::string& pos) {
-    if (pos == "QB") return SlotType::QB;
-    if (pos == "RB") return SlotType::RB;
-    if (pos == "WR") return SlotType::WR;
-    if (pos == "TE") return SlotType::TE;
-    if (pos == "DST") return SlotType::DST;
-    if (pos == "K") return SlotType::K;
+SlotType string_to_enum(const std::string& position) {
+    if (position == "QB") return SlotType::QB;
+    if (position == "RB") return SlotType::RB;
+    if (position == "WR") return SlotType::WR;
+    if (position == "TE") return SlotType::TE;
+    if (position == "DST") return SlotType::DST;
+    if (position == "K") return SlotType::K;
     return SlotType::BENCH;
 }

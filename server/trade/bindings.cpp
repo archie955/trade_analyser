@@ -17,7 +17,7 @@ py::list run_trade_engine(py::list team1_data, py::list team2_data) {
             p["id"].cast<int>(),
             p["name"].cast<std::string>(),
             p["points"].cast<double>(),
-            p["pos"].cast<std::string>()
+            p["position"].cast<std::string>()
         );
     }
 
@@ -28,7 +28,7 @@ py::list run_trade_engine(py::list team1_data, py::list team2_data) {
             p["id"].cast<int>(),
             p["name"].cast<std::string>(),
             p["points"].cast<double>(),
-            p["pos"].cast<std::string>()
+            p["position"].cast<std::string>()
         );
     }
 

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional, List
 from datetime import datetime
-import datatypes
+import models.datatypes as datatypes
 
 config = ConfigDict(from_attributes=True)
 
@@ -97,9 +97,13 @@ class Trade(BaseModel):
     gain_2: float
     model_config = config
 
+class TradeList(BaseModel):
+    trades: List[Trade]
+    model_config = config
+
 class Trades(BaseModel):
     name: str
-    trades: List[Trade]
+    trades: List
     model_config = config
 
 class TradeOut(BaseModel):

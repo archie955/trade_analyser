@@ -5,7 +5,8 @@ from fastapi.testclient import TestClient
 
 from main import app
 from database.database import get_db
-from models.models import Base
+from models.models import Base, League, Team, Player, TeamPlayer
+from tests.rawdata import data
 
 SQLALCHEMY_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5433/test_db" # just a test database that gets made for tests then dropped immediately
 
@@ -41,8 +42,9 @@ def client(db):
     app.dependency_overrides.clear()
 
 class AuthClient:
-    def __init__(self, client, user, leagues=False, teams=False):
+    def __init__(self, client, user, db=None, leagues=False, teams=False):
         self.client = client
+        self.db = db
         self.user = user
         if leagues:
             self.post("/leagues/", json={"name": "league_1"})
@@ -51,6 +53,72 @@ class AuthClient:
         if leagues and teams:
             self.post("/teams/1", json={"name": "team_1"})
             self.post("/teams/1", json={"name": "team_2"})
+
+    def seed_trade_setup(self):
+        league = League(user_id=1, name="Trade League")
+        self.db.add(league)
+        self.db.flush()
+        
+        team1 = Team(
+            name="team_1",
+            user_id=1,
+            league_id=league.id
+        )
+
+        team2 = Team(
+            name="team_2",
+            user_id=1,
+            league_id=league.id
+        )
+
+        self.db.add_all([team1, team2])
+        self.db.flush()
+
+        self.seed_players(team1.id, team2.id)
+
+        self.db.commit()
+
+        return {
+            "league_id": league.id,
+            "team1_id": team1.id,
+            "team2_id": team2.id
+        }
+    
+    def seed_players(self, team1_id, team2_id):
+        for p in data["team1"]:
+            player = Player(
+                id=p["id"],
+                name=p["name"],
+                team=p["team"],
+                position=p["position"],
+                points_ppr=p["points"],
+                points_halfppr=p["points"],
+                points_noppr=p["points"],
+            )
+            self.db.add(player)
+            self.db.flush()
+
+            self.db.add(
+                TeamPlayer(team_id=team1_id, player_id=player.id)
+            )
+
+        for p in data["team2"]:
+            player = Player(
+                id=p["id"],
+                name=p["name"],
+                team=p["team"],
+                position=p["position"],
+                points_ppr=p["points"],
+                points_halfppr=p["points"],
+                points_noppr=p["points"],
+            )
+            self.db.add(player)
+            self.db.flush()
+
+            self.db.add(
+                TeamPlayer(team_id=team2_id, player_id=player.id)
+            )
+
 
     def auth_headers(self, expired=False):
         token = self.user["access_token"]
@@ -106,6 +174,15 @@ def auth_client_teams(client, helpers):
     user = helpers.full_login(client)
 
     return AuthClient(client, user, leagues=True, teams=True)
+
+@pytest.fixture
+def auth_client_trade(client, db, helpers):
+    user = helpers.full_login(client)
+
+    ac = AuthClient(client, user, db=db)
+    ac.seed_trade_setup()
+
+    return ac
 
 class Helpers:
     @staticmethod

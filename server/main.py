@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from routers import user, league, team
+from routers import user, league, team, players, trades
 from utils.config import settings
 from database.database import get_db
 from sqlalchemy import text
@@ -23,6 +23,8 @@ app.add_middleware(
 app.include_router(user.router)
 app.include_router(league.router)
 app.include_router(team.router)
+app.include_router(players.router)
+app.include_router(trades.router)
 
 
 @app.get("/health")

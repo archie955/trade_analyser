@@ -47,7 +47,7 @@ struct Team {
         double total = 0.0;
         std::unordered_map<SlotType, int> check;
         for (const auto& p: this->players) {
-            SlotType type = p.pos;
+            SlotType type = p.position;
             if (type == SlotType::WR || type == SlotType::RB) {
                 if (check[type] < 2) {
                     check[type] += 1;
@@ -68,7 +68,7 @@ struct Team {
 
     const std::optional<std::reference_wrapper<const Player>> qb() const {
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::QB) {
+            if (p.position == SlotType::QB) {
                 return p;
             }
         }
@@ -77,7 +77,7 @@ struct Team {
 
     const std::optional<std::reference_wrapper<const Player>> te() const {
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::TE) {
+            if (p.position == SlotType::TE) {
                 return p;
             }
         }
@@ -86,7 +86,7 @@ struct Team {
 
     const std::optional<std::reference_wrapper<const Player>> dst() const {
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::DST) {
+            if (p.position == SlotType::DST) {
                 return p;
             }
         }
@@ -95,7 +95,7 @@ struct Team {
 
     const std::optional<std::reference_wrapper<const Player>> k() const {
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::K) {
+            if (p.position == SlotType::K) {
                 return p;
             }
         }
@@ -104,7 +104,7 @@ struct Team {
 
     const std::optional<std::reference_wrapper<const Player>> rb1() const {
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::RB) {
+            if (p.position == SlotType::RB) {
                 return p;
             }
         }
@@ -114,7 +114,7 @@ struct Team {
     const std::optional<std::reference_wrapper<const Player>> rb2() const {
         bool accept = false;
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::RB) {
+            if (p.position == SlotType::RB) {
                 if (accept) {
                     return p;
                 } 
@@ -126,7 +126,7 @@ struct Team {
 
     const std::optional<std::reference_wrapper<const Player>> wr1() const {
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::WR) {
+            if (p.position == SlotType::WR) {
                 return p;
             }
         }
@@ -136,7 +136,7 @@ struct Team {
     const std::optional<std::reference_wrapper<const Player>> wr2() const {
         bool accept = false;
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::WR) {
+            if (p.position == SlotType::WR) {
                 if (accept) {
                     return p;
                 } 
@@ -150,12 +150,12 @@ struct Team {
         int wr_count = 0;
         int rb_count = 0;
         for (const auto& p: this->players) {
-            if (p.pos == SlotType::RB) {
+            if (p.position == SlotType::RB) {
                 if (rb_count == 2) {
                     return p;
                 }
                 rb_count += 1;
-            } else if (p.pos == SlotType::WR) {
+            } else if (p.position == SlotType::WR) {
                 if (wr_count == 2) {
                     return p;
                 }
