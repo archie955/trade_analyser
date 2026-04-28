@@ -30,8 +30,7 @@ data = {
 
 result = trade_engine.evaluate_trades(
     data["team1"],
-    data["team2"]
+    [{"team_name": "test_team", "players": data["team2"]}]
 )
 
-for trade in result:
-    print(trade)
+print(result)

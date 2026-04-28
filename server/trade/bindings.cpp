@@ -52,10 +52,10 @@ py::list run_trade_engine(py::list team1_data, py::list team2_data) {
         py::list p2_names;
 
         for (const auto& p : players1)
-            p1_names.append(p.name);
+            p1_names.append(std::make_tuple(p.id, p.name));
 
         for (const auto& p : players2)
-            p2_names.append(p.name);
+            p2_names.append(std::make_tuple(p.id, p.name));
 
         row["team1_players"] = p1_names;
         row["team2_players"] = p2_names;

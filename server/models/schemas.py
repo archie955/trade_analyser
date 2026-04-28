@@ -81,3 +81,27 @@ class PlayerOut(BaseModel):
 class TeamPlayers(BaseModel):
     players: List[PlayerOut]
     model_config = config
+
+
+# TRADES
+
+class TradePlayer(BaseModel):
+    id: int
+    name: str
+    model_config = config
+
+class Trade(BaseModel):
+    players_1: List[TradePlayer]
+    gain_1: float
+    payers_2: List[TradePlayer]
+    gain_2: float
+    model_config = config
+
+class Trades(BaseModel):
+    name: str
+    trades: List[Trade]
+    model_config = config
+
+class TradeOut(BaseModel):
+    trades: List[Trades]
+    model_config = config
