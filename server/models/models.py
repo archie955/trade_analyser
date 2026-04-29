@@ -53,7 +53,7 @@ class User(Base):
         onupdate=func.now()
     )
 
-    leagues = relationship(
+    leagues: Mapped[list["League"]] = relationship(
         "League",
         back_populates="owner",
         cascade="all, delete-orphan"
@@ -94,12 +94,12 @@ class League(Base):
         onupdate=func.now()
     )
     
-    owner = relationship(
+    owner: Mapped["User"] = relationship(
         "User",
         back_populates="leagues"
     )
 
-    teams = relationship(
+    teams: Mapped[list["Team"]] = relationship(
         "Team",
         back_populates="league",
         cascade="all, delete-orphan"
@@ -145,7 +145,7 @@ class Team(Base):
         onupdate=func.now()
     )
 
-    league = relationship(
+    league: Mapped["League"] = relationship(
         "League",
         back_populates="teams"
     )
