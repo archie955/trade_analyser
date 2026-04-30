@@ -5,7 +5,8 @@ from fastapi import HTTPException, status, Depends, Path
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any
 from models import schemas, models
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from database.database import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -59,28 +60,32 @@ def verify_access_token(token:str) -> schemas.TokenData:
     
     return schemas.TokenData(id=user_id)
 
-def get_current_user(
+async def get_current_user(
         token: str = Depends(oauth2_scheme),
-        db: Session = Depends(get_db)
+        db: AsyncSession = Depends(get_db)
 ) -> models.User:
     user_id_token = verify_access_token(token=token)
 
-    user = db.query(models.User).filter(models.User.id == int(user_id_token.id)).first()
+    results = await db.execute(select(models.User).where(models.User.id == int(user_id_token.id)))
+    user = results.scalar_one_or_none()
 
     if not user:
         raise CREDENTIALS_EXCEPTION
     
     return user
 
-def get_current_league(
+async def get_current_league(
         league_id: int = Path(..., description="ID of the league"),
         user: models.User = Depends(get_current_user),
-        db: Session = Depends(get_db)
+        db: AsyncSession = Depends(get_db)
 ) -> models.League:
     
-    league = db.query(models.League).filter(
+    results = await db.execute(select(models.League).where(
         models.League.user_id == user.id,
-        models.League.id == league_id).first()
+        models.League.id == league_id
+    ))
+    
+    league = results.scalar_one_or_none()
 
     if not league:
         raise HTTPException(
@@ -90,16 +95,18 @@ def get_current_league(
     
     return league
 
-def get_current_team(
+async def get_current_team(
         team_id: int = Path(..., description="ID of the team"),
         league: models.League = Depends(get_current_league),
-        db: Session = Depends(get_db)
+        db: AsyncSession = Depends(get_db)
 ) -> models.Team:
     
-    team = db.query(models.Team).filter(
+    results = await db.execute(select(models.Team).where(
         models.Team.id == team_id,
         models.Team.league_id == league.id
-    ).first()
+    ))
+    
+    team = results.scalar_one_or_none()
 
     if not team:
         raise HTTPException(

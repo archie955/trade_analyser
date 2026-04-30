@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from models import schemas, models
 from database.database import get_db
-from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import or_, select
 from utils import utils
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from authentication import auth
@@ -10,21 +10,20 @@ from authentication import auth
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
-def create_user(
+async def create_user(
         user: schemas.UserCreate,
-        db: Session = Depends(get_db)
+        db: AsyncSession = Depends(get_db)
         ):
+    result = await db.execute(select(models.User).where(
+        or_(models.User.email == user.email,
+            models.User.username == user.username)
+            ))
+    already_user = result.scalars().all()
     
-    if db.query(models.User).filter(models.User.email == user.email).first():
+    if already_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="This email is already in use"
-        )
-    
-    if db.query(models.User).filter(models.User.username == user.username).first():
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="This username is already in use"
+            detail="This user already has an account is already in use"
         )
     
     hashed_pwd = utils.hash(user.password)
@@ -36,20 +35,24 @@ def create_user(
     )
 
     db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    await db.commit()
+    await db.refresh(new_user)
 
     return schemas.UserOut.model_validate(new_user)
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=schemas.Token)
-def login(
+async def login(
     user_credentials: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
-    user = db.query(models.User).filter(or_(
-        models.User.email == user_credentials.username,
-        models.User.username == user_credentials.username)
-        ).first()
+    results = await db.execute(select(models.User).where(
+        or_(
+            models.User.email == user_credentials.username,
+            models.User.username == user_credentials.username
+        )
+    ))
+    
+    user = results.scalar_one_or_none()
     
     if not user:
         raise HTTPException(
@@ -71,9 +74,9 @@ def login(
 
     
 @router.put("/", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
-def update_user(
+async def update_user(
     updated_payload: schemas.UserUpdate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user: models.User = Depends(auth.get_current_user)
 ):
     password = updated_payload.password
@@ -97,18 +100,18 @@ def update_user(
     user.username = updated_user.username
     user.hashed_password = utils.hash(updated_user.password)
 
-    db.commit()
-    db.refresh(user)
+    await db.commit()
+    await db.refresh(user)
 
     return schemas.UserOut.model_validate(user)
 
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(
-    db: Session = Depends(get_db),
+async def delete_user(
+    db: AsyncSession = Depends(get_db),
     user: models.User = Depends(auth.get_current_user)
 ):
     
-    db.delete(user)
-    db.commit()
+    await db.delete(user)
+    await db.commit()
 
     return
