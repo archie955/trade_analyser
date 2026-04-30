@@ -1,7 +1,6 @@
-import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from fastapi.testclient import TestClient
+import pytest_asyncio
+from httpx import AsyncClient, ASGITransport
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from main import app
 from database.database import get_db
@@ -10,34 +9,46 @@ from tests.rawdata import data
 
 SQLALCHEMY_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5433/test_db" # just a test database that gets made for tests then dropped immediately
 
+@pytest_asyncio.fixture(scope="function")
+async def engine():
+    engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 
-@pytest.fixture(scope="function")
-def engine():
-    engine = create_engine(url=SQLALCHEMY_DATABASE_URL)
-    Base.metadata.create_all(bind=engine)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    
     yield engine
-    Base.metadata.drop_all(bind=engine)
 
-@pytest.fixture(scope="function")
-def db(engine):
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = SessionLocal()
-    yield db
-    db.rollback()
-    db.close()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
-@pytest.fixture(scope="function")
-def client(db):
-    def override_get_db():
-        try:
-            yield db
-        finally:
-            pass
+    await engine.dispose()
+
+@pytest_asyncio.fixture(scope="function")
+async def db(engine):
+    SessionLocal = async_sessionmaker(
+        bind=engine,
+        class_=AsyncSession,
+        expire_on_commit=False
+    )
+
+    async with SessionLocal() as session:
+        yield session
+        await session.rollback()
+
+@pytest_asyncio.fixture(scope="function")
+async def client(db):
+    async def override_get_db():
+        yield db
     
     app.dependency_overrides[get_db] = override_get_db
 
-    with TestClient(app) as c:
-        yield c
+    transport = ASGITransport(app=app)
+
+    async with AsyncClient(
+        transport=transport,
+        base_url="http://test"
+    ) as client:
+        yield client
 
     app.dependency_overrides.clear()
 
@@ -157,25 +168,25 @@ class AuthClient:
     def noauth_delete(self, url, **kwargs):
         return self.client.delete(url, **kwargs)
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def auth_client(client, helpers):
     user = helpers.full_login(client)
     
     return AuthClient(client, user)
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def auth_client_leagues(client, helpers):
     user = helpers.full_login(client)
 
     return AuthClient(client, user, leagues=True)
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def auth_client_teams(client, helpers):
     user = helpers.full_login(client)
 
     return AuthClient(client, user, leagues=True, teams=True)
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def auth_client_trade(client, db, helpers):
     user = helpers.full_login(client)
 
@@ -186,13 +197,13 @@ def auth_client_trade(client, db, helpers):
 
 class Helpers:
     @staticmethod
-    def register_user(client):
+    async def register_user(client: AsyncClient) -> dict:
         user = {
             "email": "authuser@example.com",
             "username": "authusername",
             "password": "authpassword"
         }
-        response = client.post(
+        response = await client.post(
             "/users/",
             json=user
         )
@@ -204,20 +215,20 @@ class Helpers:
         return user
     
     @staticmethod
-    def full_login(client):
+    async def full_login(client: AsyncClient) -> dict:
         user = {
             "email": "authuser@example.com",
             "username": "authusername",
             "password": "authpassword"
         }
-        user_payload = client.post(
+        user_payload = await client.post(
             "/users/",
             json=user
         )
 
         assert user_payload.status_code == 201
 
-        response = client.post(
+        response = await client.post(
             "/users/login",
             data={
                 "username": user["email"],
@@ -245,8 +256,8 @@ class Helpers:
         }
     
     @staticmethod
-    def update_user(client, updated, user):
-        response = client.put(
+    async def update_user(client, updated, user):
+        response = await client.put(
             "/users/",
             json=updated,
             headers={"Authorization": f"Bearer {user['access_token']}"}
@@ -255,6 +266,6 @@ class Helpers:
         assert response.status_code == 200
         return response.json()
     
-@pytest.fixture
+@pytest_asyncio.fixture
 def helpers():
     return Helpers
