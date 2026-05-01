@@ -34,28 +34,28 @@ async def create_team(
 
 
 @router.get("/{league_id}", status_code=status.HTTP_200_OK, response_model=schemas.Teams)
-def get_league_teams(
-    db: Session = Depends(get_db),
+async def get_league_teams(
+    db: AsyncSession = Depends(get_db),
     league: models.League = Depends(get_current_league)
 ):
-    teams = db.query(models.Team).filter(
+    teams = (await db.execute(select(models.Team).where(
         models.Team.league_id == league.id
-    ).all()
+    ))).scalars().all()
 
     team_list = [schemas.TeamOut.model_validate(team) for team in teams]
 
     return schemas.Teams(teams=team_list)
 
 @router.put("/{league_id}", status_code=status.HTTP_200_OK, response_model=schemas.TeamOut)
-def update_team_info(
+async def update_team_info(
     updated_team: schemas.TeamUpdate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     league: models.League = Depends(get_current_league)
 ):
-    team_to_update = db.query(models.Team).filter(
+    team_to_update = (await db.execute(select(models.Team).where(
         models.Team.league_id == league.id,
         models.Team.id == updated_team.id
-    ).first()
+    ))).scalar_one_or_none()
 
     if not team_to_update:
         raise HTTPException(
@@ -65,21 +65,21 @@ def update_team_info(
     
     team_to_update.name = updated_team.name
 
-    db.commit()
-    db.refresh(team_to_update)
+    await db.commit()
+    await db.refresh(team_to_update)
 
     return schemas.TeamOut.model_validate(team_to_update)
 
 @router.delete("/{league_id}/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_team(
+async def delete_team(
     id: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     league: models.User = Depends(get_current_league)
 ):
-    team_to_delete = db.query(models.Team).filter(
+    team_to_delete = (await db.execute(select(models.Team).where(
         models.Team.league_id == league.id,
         models.Team.id == id
-    ).first()
+    ))).scalar_one_or_none()
 
     if not team_to_delete:
         raise HTTPException(
@@ -87,8 +87,8 @@ def delete_team(
             detail=f"Team with id {id} not found to delete"
         )
     
-    db.delete(team_to_delete)
-    db.commit()
+    await db.delete(team_to_delete)
+    await db.commit()
 
     return
 
