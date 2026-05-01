@@ -5,7 +5,7 @@ from routers import user, league, team, players, trades
 from utils.config import settings
 from database.database import get_db
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
 app = FastAPI()
@@ -28,11 +28,11 @@ app.include_router(trades.router)
 
 
 @app.get("/health")
-def health(
-    db: Session = Depends(get_db)
+async def health(
+    db: AsyncSession = Depends(get_db)
 ):
     try:
-        db.execute(text("SELECT 1"))
+        await db.execute(text("SELECT 1"))
         return {"status": "healthy"}
     except:
         return {"status": "unhealthy"}

@@ -7,6 +7,7 @@ from typing import Dict, Any
 from models import schemas, models
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from database.database import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -66,8 +67,9 @@ async def get_current_user(
 ) -> models.User:
     user_id_token = verify_access_token(token=token)
 
-    results = await db.execute(select(models.User).where(models.User.id == int(user_id_token.id)))
-    user = results.scalar_one_or_none()
+    user = (await db.execute(select(models.User).where(
+        models.User.id == int(user_id_token.id)
+    ))).scalar_one_or_none()
 
     if not user:
         raise CREDENTIALS_EXCEPTION
@@ -80,12 +82,10 @@ async def get_current_league(
         db: AsyncSession = Depends(get_db)
 ) -> models.League:
     
-    results = await db.execute(select(models.League).where(
+    league = (await db.execute(select(models.League).where(
         models.League.user_id == user.id,
         models.League.id == league_id
-    ))
-    
-    league = results.scalar_one_or_none()
+    ))).scalar_one_or_none()
 
     if not league:
         raise HTTPException(
@@ -101,12 +101,10 @@ async def get_current_team(
         db: AsyncSession = Depends(get_db)
 ) -> models.Team:
     
-    results = await db.execute(select(models.Team).where(
+    team = (await db.execute(selectinload(models.Team).where(
         models.Team.id == team_id,
         models.Team.league_id == league.id
-    ))
-    
-    team = results.scalar_one_or_none()
+    ))).scalar_one_or_none()
 
     if not team:
         raise HTTPException(
