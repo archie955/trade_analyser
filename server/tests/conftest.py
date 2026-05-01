@@ -53,49 +53,36 @@ async def client(db):
     app.dependency_overrides.clear()
 
 class AuthClient:
-    def __init__(self, client, user, db=None, leagues=False, teams=False):
+    def __init__(self, client, user, db=None):
         self.client = client
         self.db = db
         self.user = user
-        if leagues:
-            self.post("/leagues/", json={"name": "league_1"})
-            self.post("/leagues/", json={"name": "league_2"})
+    
+    async def seed_leagues(self):
+        league = League(id=1, user_id=1, name="Trade League")
+        alt_league = League(id=2, user_id=1, name="Alt League")
+        self.db.add_all([league, alt_league])
+        await self.db.flush()
 
-        if leagues and teams:
-            self.post("/teams/1", json={"name": "team_1"})
-            self.post("/teams/1", json={"name": "team_2"})
-
-    def seed_trade_setup(self):
-        league = League(user_id=1, name="Trade League")
-        self.db.add(league)
-        self.db.flush()
-        
+    async def seed_teams(self):
         team1 = Team(
-            name="team_1",
+            id=1,
+            name="Trade Team",
             user_id=1,
-            league_id=league.id
+            league_id=1
         )
 
         team2 = Team(
-            name="team_2",
+            id=2,
+            name="Alt Team",
             user_id=1,
-            league_id=league.id
+            league_id=1
         )
 
         self.db.add_all([team1, team2])
-        self.db.flush()
+        await self.db.flush()
 
-        self.seed_players(team1.id, team2.id)
-
-        self.db.commit()
-
-        return {
-            "league_id": league.id,
-            "team1_id": team1.id,
-            "team2_id": team2.id
-        }
-    
-    def seed_players(self, team1_id, team2_id):
+    async def seed_players(self, team1_id, team2_id):
         for p in data["team1"]:
             player = Player(
                 id=p["id"],
@@ -107,7 +94,7 @@ class AuthClient:
                 points_noppr=p["points"],
             )
             self.db.add(player)
-            self.db.flush()
+            await self.db.flush()
 
             self.db.add(
                 TeamPlayer(team_id=team1_id, player_id=player.id)
@@ -124,12 +111,13 @@ class AuthClient:
                 points_noppr=p["points"],
             )
             self.db.add(player)
-            self.db.flush()
+            await self.db.flush()
 
             self.db.add(
                 TeamPlayer(team_id=team2_id, player_id=player.id)
             )
-
+        
+        await self.db.flush()
 
     def auth_headers(self, expired=False):
         token = self.user["access_token"]
@@ -139,59 +127,75 @@ class AuthClient:
             "Authorization": f"Bearer {token}"
         }
 
-    def request(self, method, url, **kwargs):
+    async def request(self, method, url, **kwargs):
         headers = kwargs.pop("headers", {})
         headers.update(self.auth_headers())
-        return self.client.request(method, url, headers=headers, **kwargs)
+        response = await self.client.request(method, url, headers=headers, **kwargs)
+        return response
     
-    def get(self, url, **kwargs):
-        return self.request("GET", url, **kwargs)
+    async def get(self, url, **kwargs):
+        response = await self.request("GET", url, **kwargs)
+        return response
     
-    def post(self, url, **kwargs):
-        return self.request("POST", url, **kwargs)
+    async def post(self, url, **kwargs):
+        response = await self.request("POST", url, **kwargs)
+        return response
     
-    def put(self, url, **kwargs):
-        return self.request("PUT", url, **kwargs)
+    async def put(self, url, **kwargs):
+        response = await self.request("PUT", url, **kwargs)
+        return response
     
-    def delete(self, url, **kwargs):
-        return self.request("DELETE", url, **kwargs)
+    async def delete(self, url, **kwargs):
+        response = await self.request("DELETE", url, **kwargs)
+        return response
     
-    def noauth_get(self, url, **kwargs):
-        return self.client.get(url, **kwargs)
+    async def noauth_get(self, url, **kwargs):
+        response = await self.client.get(url, **kwargs)
+        return response
     
-    def noauth_post(self, url, **kwargs):
-        return self.client.post(url, **kwargs)
+    async def noauth_post(self, url, **kwargs):
+        response = await self.client.post(url, **kwargs)
+        return response
     
-    def noauth_put(self, url, **kwargs):
-        return self.client.put(url, **kwargs)
+    async def noauth_put(self, url, **kwargs):
+        response = await self.client.put(url, **kwargs)
+        return response
     
-    def noauth_delete(self, url, **kwargs):
-        return self.client.delete(url, **kwargs)
+    async def noauth_delete(self, url, **kwargs):
+        response = await self.client.delete(url, **kwargs)
+        return response
 
 @pytest_asyncio.fixture
-def auth_client(client, helpers):
-    user = helpers.full_login(client)
+async def auth_client(client, helpers):
+    user = await helpers.full_login(client)
     
     return AuthClient(client, user)
 
 @pytest_asyncio.fixture
-def auth_client_leagues(client, helpers):
-    user = helpers.full_login(client)
+async def auth_client_leagues(client, db, helpers):
+    user = await helpers.full_login(client)
+    ac = AuthClient(client, user, db=db)
+    await ac.seed_leagues()
 
-    return AuthClient(client, user, leagues=True)
-
-@pytest_asyncio.fixture
-def auth_client_teams(client, helpers):
-    user = helpers.full_login(client)
-
-    return AuthClient(client, user, leagues=True, teams=True)
+    return ac
 
 @pytest_asyncio.fixture
-def auth_client_trade(client, db, helpers):
-    user = helpers.full_login(client)
+async def auth_client_teams(client, db, helpers):
+    user = await helpers.full_login(client)
+    ac = AuthClient(client, user, db=db)
+    await ac.seed_leagues()
+    await ac.seed_teams()
+
+    return ac
+
+@pytest_asyncio.fixture
+async def auth_client_trade(client, db, helpers):
+    user = await helpers.full_login(client)
 
     ac = AuthClient(client, user, db=db)
-    ac.seed_trade_setup()
+    await ac.seed_leagues()
+    await ac.seed_teams()
+    await ac.seed_players()
 
     return ac
 
