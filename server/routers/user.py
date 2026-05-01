@@ -14,11 +14,10 @@ async def create_user(
         user: schemas.UserCreate,
         db: AsyncSession = Depends(get_db)
         ):
-    result = await db.execute(select(models.User).where(
+    already_user = (await db.execute(select(models.User).where(
         or_(models.User.email == user.email,
             models.User.username == user.username)
-            ))
-    already_user = result.scalars().all()
+            ))).scalars().all()
     
     if already_user:
         raise HTTPException(
@@ -45,14 +44,11 @@ async def login(
     user_credentials: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
-    results = await db.execute(select(models.User).where(
+    user = (await db.execute(select(models.User).where(
         or_(
             models.User.email == user_credentials.username,
-            models.User.username == user_credentials.username
-        )
-    ))
-    
-    user = results.scalar_one_or_none()
+            models.User.username == user_credentials.username)
+        ))).scalar_one_or_none()
     
     if not user:
         raise HTTPException(

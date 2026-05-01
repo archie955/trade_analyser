@@ -13,12 +13,10 @@ async def create_league(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
-    results = await db.execute(select(models.League).where(
+    already_exists = (await db.execute(select(models.League).where(
         models.League.name == league.name,
         models.League.user_id == user.id
-    ))
-    
-    already_exists = results.scalar_one_or_none()
+    ))).scalar_one_or_none()
 
     if already_exists:
         raise HTTPException(
@@ -41,10 +39,9 @@ async def get_leagues(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
-    results = await db.execute(select(models.League).where(
+    leagues = (await db.execute(select(models.League).where(
         models.League.user_id == user.id
-    ))
-    leagues = results.scalars().all()
+    ))).scalars().all()
 
     league_list = [schemas.LeagueOut.model_validate(league) for league in leagues]
 
@@ -58,11 +55,10 @@ async def update_league_info(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
-    results = await db.execute(select(models.League).where(
+    league_to_update = (await db.execute(select(models.League).where(
         models.League.id == updated_league.id,
         models.League.user_id == user.id
-    ))
-    league_to_update = results.scalar_one_or_none()
+    ))).scalar_one_or_none()
 
     if not league_to_update:
         raise HTTPException(
@@ -85,11 +81,10 @@ async def delete_league(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
-    results = await db.execute(select(models.League).where(
+    league_to_delete = (await db.execute(select(models.League).where(
         models.League.user_id == user.id,
         models.League.id == id
-    ))
-    league_to_delete = results.scalar_one_or_none()
+    ))).scalar_one_or_none()
 
     if not league_to_delete:
         raise HTTPException(

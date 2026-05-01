@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from models import models, schemas
 from database.database import get_db
 from authentication.auth import get_current_league
@@ -7,14 +8,15 @@ from authentication.auth import get_current_league
 router = APIRouter(prefix="/teams", tags=["Teams"])
 
 @router.post("/{league_id}", status_code=status.HTTP_201_CREATED, response_model=schemas.TeamOut)
-def create_team(
+async def create_team(
     team: schemas.TeamCreate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     league: models.League = Depends(get_current_league)
 ):
-    already_exists = db.query(models.Team).filter(
+    already_exists = (await db.execute(select(models.Team).where(
         models.Team.name == team.name,
-        models.Team.league_id == league.id).first()
+        models.Team.league_id == league.id 
+    ))).scalar_one_or_none()
     
     if already_exists:
         raise HTTPException(
@@ -25,8 +27,8 @@ def create_team(
     db_team = models.Team(user_id=league.user_id, league_id=league.id, **team.model_dump())
 
     db.add(db_team)
-    db.commit()
-    db.refresh(db_team)
+    await db.commit()
+    await db.refresh(db_team)
 
     return schemas.TeamOut.model_validate(db_team)
 
