@@ -5,11 +5,11 @@ from models import models, schemas
 from database.database import get_db
 from authentication.auth import get_current_team
 
-router = APIRouter(prefix="/players", tags=["Players"])
+router = APIRouter(prefix="/leagues/{league_id}/teams/{team_id}/players", tags=["Players"])
 
 async def fetch_player(
         id: int,
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession
 ):
     player_db = (await db.execute(select(models.Player).where(
         models.Player.id == id
@@ -21,16 +21,17 @@ async def fetch_player(
             detail="Player not found"
         )
     
-    return schemas.PlayerOut.model_validate(player_db)
+    return player_db
 
 
-@router.post("/{team_id}", status_code=status.HTTP_201_CREATED, response_model=schemas.PlayerOut)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PlayerOut)
 async def add_player(
-    id: int,
+    player_in: dict,
     db: AsyncSession = Depends(get_db),
     team: models.Team = Depends(get_current_team)
 ):
-    player = await fetch_player(id)
+    id = player_in["id"]
+    player = await fetch_player(id, db)
 
     already_added = (await db.execute(select(models.TeamPlayer).where(
         models.TeamPlayer.team_id == team.id,
@@ -47,9 +48,9 @@ async def add_player(
 
     await db.commit()
 
-    return player
+    return schemas.PlayerOut.model_validate(player)
     
-@router.get("/{team_id}", status_code=status.HTTP_200_OK, response_model=schemas.TeamPlayers)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=schemas.TeamPlayers)
 def get_team_players(
     team: models.Team = Depends(get_current_team)
 ):
@@ -65,7 +66,7 @@ def get_team_players(
 
     return schemas.TeamPlayers(players=players_list)
 
-@router.delete("/{team_id}/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_player(
     id: int,
     db: AsyncSession = Depends(get_db),

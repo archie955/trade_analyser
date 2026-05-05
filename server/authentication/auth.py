@@ -96,15 +96,20 @@ async def get_current_league(
     return league
 
 async def get_current_team(
+        league_id: int = Path(..., description="ID of the league"),
         team_id: int = Path(..., description="ID of the team"),
-        league: models.League = Depends(get_current_league),
         db: AsyncSession = Depends(get_db)
 ) -> models.Team:
+
     
-    team = (await db.execute(selectinload(models.Team).where(
-        models.Team.id == team_id,
-        models.Team.league_id == league.id
-    ))).scalar_one_or_none()
+    team = (await db.execute(
+        select(models.Team)
+        .options(selectinload(models.Team.players))
+        .where(
+            models.Team.id == team_id,
+            models.Team.league_id == league_id
+        )
+    )).scalar_one_or_none()
 
     if not team:
         raise HTTPException(

@@ -5,9 +5,9 @@ from models import models, schemas
 from database.database import get_db
 from authentication.auth import get_current_league
 
-router = APIRouter(prefix="/teams", tags=["Teams"])
+router = APIRouter(prefix="/leagues/{league_id}/teams", tags=["Teams"])
 
-@router.post("/{league_id}", status_code=status.HTTP_201_CREATED, response_model=schemas.TeamOut)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.TeamOut)
 async def create_team(
     team: schemas.TeamCreate,
     db: AsyncSession = Depends(get_db),
@@ -33,7 +33,7 @@ async def create_team(
     return schemas.TeamOut.model_validate(db_team)
 
 
-@router.get("/{league_id}", status_code=status.HTTP_200_OK, response_model=schemas.Teams)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=schemas.Teams)
 async def get_league_teams(
     db: AsyncSession = Depends(get_db),
     league: models.League = Depends(get_current_league)
@@ -46,7 +46,7 @@ async def get_league_teams(
 
     return schemas.Teams(teams=team_list)
 
-@router.put("/{league_id}", status_code=status.HTTP_200_OK, response_model=schemas.TeamOut)
+@router.put("/", status_code=status.HTTP_200_OK, response_model=schemas.TeamOut)
 async def update_team_info(
     updated_team: schemas.TeamUpdate,
     db: AsyncSession = Depends(get_db),
@@ -70,7 +70,7 @@ async def update_team_info(
 
     return schemas.TeamOut.model_validate(team_to_update)
 
-@router.delete("/{league_id}/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_team(
     id: int,
     db: AsyncSession = Depends(get_db),
