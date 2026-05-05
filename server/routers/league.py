@@ -7,7 +7,7 @@ from authentication.auth import get_current_user
 
 router = APIRouter(prefix="/leagues", tags=["Leagues"])
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.LeagueOut)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.LeagueOut)
 async def create_league(
     league: schemas.LeagueCreate,
     db: AsyncSession = Depends(get_db),
@@ -34,7 +34,7 @@ async def create_league(
 
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=schemas.Leagues)
+@router.get("", status_code=status.HTTP_200_OK, response_model=schemas.Leagues)
 async def get_leagues(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
@@ -49,7 +49,7 @@ async def get_leagues(
 
 
 
-@router.put("/", status_code=status.HTTP_200_OK, response_model=schemas.LeagueOut)
+@router.put("", status_code=status.HTTP_200_OK, response_model=schemas.LeagueOut)
 async def update_league_info(
     updated_league: schemas.LeagueUpdate,
     db: AsyncSession = Depends(get_db),

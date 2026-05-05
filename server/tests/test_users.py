@@ -11,7 +11,7 @@ async def test_duplicate_email_registration(client, helpers):
     user = await helpers.register_user(client)
 
     user["username"] = "newusername"
-    response = await client.post("/users/", json=user)
+    response = await client.post("/users", json=user)
 
     assert response.status_code == 409
 
@@ -19,7 +19,7 @@ async def test_duplicate_username_registration(client, helpers):
     user = await helpers.register_user(client)
 
     user["email"] = "newusername@example.com"
-    response = await client.post("/users/", json=user)
+    response = await client.post("/users", json=user)
 
     assert response.status_code == 409
 
@@ -29,7 +29,7 @@ async def test_duplicate_password_ok(client, helpers):
     user["email"] = "newusername@example.com"
     user["username"] = "newusername"
 
-    response = await client.post("/users/", json=user)
+    response = await client.post("/users", json=user)
 
     assert response.status_code == 201
 
@@ -39,7 +39,7 @@ async def test_missing_username_registration(client):
         "password": "missingdata"
     }
 
-    response = await client.post("/users/", json=user)
+    response = await client.post("/users", json=user)
 
     assert response.status_code == 422
 
@@ -49,7 +49,7 @@ async def test_missing_email_registration(client):
         "password": "missingdata"
     }
 
-    response = await client.post("/users/", json=user)
+    response = await client.post("/users", json=user)
 
     assert response.status_code == 422
 
@@ -59,7 +59,7 @@ async def test_missing_password_registration(client):
         "username": "missingdata"
     }
 
-    response = await client.post("/users/", json=user)
+    response = await client.post("/users", json=user)
 
     assert response.status_code == 422
 
@@ -70,7 +70,7 @@ async def test_incorrect_email_type(client):
         "password": "password"
     }
 
-    response = await client.post("/users/", json=user)
+    response = await client.post("/users", json=user)
 
     assert response.status_code == 422
 
@@ -198,7 +198,7 @@ async def test_update_incorrect_password(client, helpers):
         "password": "incorrect"
     }
     response = await client.put(
-        "/users/",
+        "/users",
         json=updated_payload,
         headers=helpers.auth_headers(user)
         )
@@ -217,7 +217,7 @@ async def test_update_same_info(client, helpers):
         "password": user["password"]
     }
     response = await client.put(
-        "/users/",
+        "/users",
         json=updated_payload,
         headers=helpers.auth_headers(user)
         )
@@ -231,7 +231,7 @@ async def test_update_same_info(client, helpers):
 async def test_delete(client, helpers):
     user = await helpers.full_login(client)
 
-    response = await client.delete("/users/",
+    response = await client.delete("/users",
                              headers=helpers.auth_headers(user)
                              )
     
@@ -240,13 +240,13 @@ async def test_delete(client, helpers):
 async def test_delete_not_logged_in(client, helpers):
     user = await helpers.register_user(client)
 
-    response = await client.delete("/users/")
+    response = await client.delete("/users")
 
     assert response.status_code == 401
 
 async def test_delete_logged_in_no_headers(client, helpers):
     response = await helpers.full_login(client)
 
-    response = await client.delete("/users/")
+    response = await client.delete("/users")
 
     assert response.status_code == 401

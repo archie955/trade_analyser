@@ -9,7 +9,7 @@ from authentication import auth
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 async def create_user(
         user: schemas.UserCreate,
         db: AsyncSession = Depends(get_db)
@@ -69,7 +69,7 @@ async def login(
     return schemas.Token(access_token = access, token_type = "bearer")
 
     
-@router.put("/", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
+@router.put("", status_code=status.HTTP_200_OK, response_model=schemas.UserOut)
 async def update_user(
     updated_payload: schemas.UserUpdate,
     db: AsyncSession = Depends(get_db),
@@ -101,7 +101,7 @@ async def update_user(
 
     return schemas.UserOut.model_validate(user)
 
-@router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(auth.get_current_user)

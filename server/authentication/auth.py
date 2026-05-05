@@ -118,3 +118,29 @@ async def get_current_team(
         )
 
     return team
+
+async def get_current_players(
+        league_id: int = Path(..., description="ID of the league"),
+        team_id: int = Path(..., description="ID of the team"),
+        db: AsyncSession = Depends(get_db)
+) -> models.Team:
+    
+    team = (await db.execute(
+        select(models.Team)
+        .options(
+            selectinload(models.Team.players),
+            selectinload(models.Team.league).selectinload(models.League.teams).selectinload(models.Team.players)
+        )
+        .where(
+            models.Team.id == team_id,
+            models.Team.league_id == league_id
+        )
+    )).scalar_one_or_none()
+
+    if not team:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Team with id {team_id} not found"
+        )
+
+    return team

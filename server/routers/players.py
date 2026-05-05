@@ -24,7 +24,7 @@ async def fetch_player(
     return player_db
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PlayerOut)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.PlayerOut)
 async def add_player(
     player_in: dict,
     db: AsyncSession = Depends(get_db),
@@ -50,7 +50,7 @@ async def add_player(
 
     return schemas.PlayerOut.model_validate(player)
     
-@router.get("/", status_code=status.HTTP_200_OK, response_model=schemas.TeamPlayers)
+@router.get("", status_code=status.HTTP_200_OK, response_model=schemas.TeamPlayers)
 def get_team_players(
     team: models.Team = Depends(get_current_team)
 ):

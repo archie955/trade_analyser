@@ -233,7 +233,7 @@ async def auth_client_trade(client, db, helpers):
     ac = AuthClient(client, user, db=db)
     await ac.seed_leagues()
     await ac.seed_teams()
-    await ac.seed_players_teams()
+    await ac.seed_players_teams(1, 2)
 
     return ac
 
@@ -246,7 +246,7 @@ class Helpers:
             "password": "authpassword"
         }
         response = await client.post(
-            "/users/",
+            "/users",
             json=user
         )
 
@@ -264,7 +264,7 @@ class Helpers:
             "password": "authpassword"
         }
         user_payload = await client.post(
-            "/users/",
+            "/users",
             json=user
         )
 
@@ -300,7 +300,7 @@ class Helpers:
     @staticmethod
     async def update_user(client, updated, user):
         response = await client.put(
-            "/users/",
+            "/users",
             json=updated,
             headers={"Authorization": f"Bearer {user['access_token']}"}
             )
