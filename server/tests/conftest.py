@@ -53,18 +53,18 @@ async def client(db):
     app.dependency_overrides.clear()
 
 class AuthClient:
-    def __init__(self, client, user, db=None):
+    def __init__(self, client, user, db=None) -> None:
         self.client = client
         self.db = db
         self.user = user
     
-    async def seed_leagues(self):
+    async def seed_leagues(self) -> None:
         league = League(id=1, user_id=1, name="Trade League")
         alt_league = League(id=2, user_id=1, name="Alt League")
         self.db.add_all([league, alt_league])
         await self.db.flush()
 
-    async def seed_teams(self):
+    async def seed_teams(self) -> None:
         team1 = Team(
             id=1,
             name="Trade Team",
@@ -82,7 +82,7 @@ class AuthClient:
         self.db.add_all([team1, team2])
         await self.db.flush()
 
-    async def seed_players(self):
+    async def seed_players(self) -> None:
         for p in data["team1"]:
             player = Player(
                 id=p["id"],
@@ -109,7 +109,7 @@ class AuthClient:
             self.db.add(player)
             await self.db.flush()
 
-    async def seed_players_teams(self, team1_id, team2_id):
+    async def seed_players_teams(self, team1_id, team2_id) -> None:
         for p in data["team1"]:
             player = Player(
                 id=p["id"],
@@ -146,7 +146,7 @@ class AuthClient:
         
         await self.db.flush()
 
-    def auth_headers(self, expired=False):
+    def auth_headers(self, expired=False) -> dict:
         token = self.user["access_token"]
         if expired:
             token = "expired_token"
