@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
-from typing import Optional, List
+from pydantic import BaseModel, EmailStr, ConfigDict, RootModel
+from typing import Optional, List, Dict
 from datetime import datetime
 import models.datatypes as datatypes
 
@@ -96,19 +96,8 @@ class TradePlayer(BaseModel):
 class Trade(BaseModel):
     players_1: List[TradePlayer]
     gain_1: float
-    payers_2: List[TradePlayer]
+    players_2: List[TradePlayer]
     gain_2: float
     model_config = config
 
-class TradeList(BaseModel):
-    trades: List[Trade]
-    model_config = config
-
-class Trades(BaseModel):
-    name: str
-    trades: List
-    model_config = config
-
-class TradeOut(BaseModel):
-    trades: List[Trades]
-    model_config = config
+TradeOut = RootModel[Dict[str, List[Trade]]]
