@@ -57,7 +57,8 @@ def upgrade():
         sa.Column("league_id", sa.Integer, sa.ForeignKey("leagues.id", ondelete="CASCADE"), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()),
-        sa.UniqueConstraint("league_id", "name", name="uq_league_team")
+        sa.UniqueConstraint("league_id", "name", name="uq_league_team"),
+        sa.UniqueConstraint("league_id", "id", name="uq_id_league_id")
     )
     op.create_index("ix_teams_user_id_league_id", "teams", ["user_id", "league_id"])
 
@@ -80,9 +81,15 @@ def upgrade():
     op.create_table(
         "team_players",
         sa.Column("id", sa.Integer, primary_key=True, nullable=False, autoincrement=True),
-        sa.Column("team_id", sa.Integer, sa.ForeignKey("teams.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("player_id", sa.Integer, sa.ForeignKey("players.id", ondelete="CASCADE"), nullable=True),
-        sa.UniqueConstraint("team_id", "player_id", name="uq_team_player")
+        sa.Column("league_id", sa.Integer, sa.ForeignKey("teams.league_id", ondelete="CASCADE"), nullable=False),
+        sa.Column("team_id", sa.Integer, nullable=False),
+        sa.Column("player_id", sa.Integer, nullable=False),
+        sa.UniqueConstraint("league_id", "player_id", name="uq_league_player"),
+        sa.ForeignKeyConstraint(
+            ["team_id", "league_id"],
+            ["teams.id", "teams.league_id"],
+            ondelete="CASCADE"
+        )
     )
     op.create_index("ix_team_players_team_id", "team_players", ["team_id"])
 

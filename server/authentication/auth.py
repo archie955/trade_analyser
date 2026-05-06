@@ -98,16 +98,17 @@ async def get_current_league(
 async def get_current_team(
         league_id: int = Path(..., description="ID of the league"),
         team_id: int = Path(..., description="ID of the team"),
+        user: models.User = Depends(get_current_user),
         db: AsyncSession = Depends(get_db)
 ) -> models.Team:
-
     
     team = (await db.execute(
         select(models.Team)
         .options(selectinload(models.Team.players))
         .where(
             models.Team.id == team_id,
-            models.Team.league_id == league_id
+            models.Team.league_id == league_id,
+            models.Team.user_id == user.id
         )
     )).scalar_one_or_none()
 
@@ -122,6 +123,7 @@ async def get_current_team(
 async def get_current_players(
         league_id: int = Path(..., description="ID of the league"),
         team_id: int = Path(..., description="ID of the team"),
+        user: models.User = Depends(get_current_user),
         db: AsyncSession = Depends(get_db)
 ) -> models.Team:
     
@@ -133,7 +135,8 @@ async def get_current_players(
         )
         .where(
             models.Team.id == team_id,
-            models.Team.league_id == league_id
+            models.Team.league_id == league_id,
+            models.Team.user_id == user.id
         )
     )).scalar_one_or_none()
 

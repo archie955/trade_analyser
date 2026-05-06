@@ -7,34 +7,24 @@ from authentication.auth import get_current_team
 
 router = APIRouter(prefix="/leagues/{league_id}/teams/{team_id}/players", tags=["Players"])
 
-async def fetch_player(
-        id: int,
-        db: AsyncSession
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.PlayerOut)
+async def add_player(
+    player_in: schemas.PlayerIn,
+    db: AsyncSession = Depends(get_db),
+    team: models.Team = Depends(get_current_team)
 ):
-    player_db = (await db.execute(select(models.Player).where(
-        models.Player.id == id
+    player = (await db.execute(select(models.Player).where(
+        models.Player.id == player_in.id
     ))).scalar_one_or_none()
 
-    if not player_db:
+    if not player:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Player not found"
         )
-    
-    return player_db
-
-
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.PlayerOut)
-async def add_player(
-    player_in: dict,
-    db: AsyncSession = Depends(get_db),
-    team: models.Team = Depends(get_current_team)
-):
-    id = player_in["id"]
-    player = await fetch_player(id, db)
 
     already_added = (await db.execute(select(models.TeamPlayer).where(
-        models.TeamPlayer.team_id == team.id,
+        models.TeamPlayer.league_id == team.league_id,
         models.TeamPlayer.player_id == player.id
     ))).scalar_one_or_none()
 
@@ -43,8 +33,12 @@ async def add_player(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Players already added"
         )
-    
-    team.players.append(player)
+    team_player = models.TeamPlayer(
+        league_id=team.league_id,
+        team_id=team.id,
+        player_id=player.id
+    )
+    db.add(team_player)
 
     await db.commit()
 
@@ -56,10 +50,10 @@ def get_team_players(
 ):
     players = team.players
 
-    if players is None:
+    if not players:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This team has no initialised players"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No players in this team"
         )
     
     players_list = [schemas.PlayerOut.model_validate(player) for player in players]

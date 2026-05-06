@@ -68,7 +68,10 @@ class Teams(BaseModel):
 
 # PLAYERS
 
-class PlayerOut(BaseModel):
+class PlayerIn(BaseModel):
+    id: int
+
+class PlayerOut(PlayerIn):
     id: int
     name: str
     team: datatypes.Teams

@@ -1,6 +1,6 @@
 from database.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, DateTime, func, ForeignKey, UniqueConstraint, Index, Integer, Enum as sqlEnum, DECIMAL
+from sqlalchemy import String, DateTime, func, ForeignKey, UniqueConstraint, Index, Integer, Enum as sqlEnum, DECIMAL, ForeignKeyConstraint
 from datetime import datetime
 from models.datatypes import Teams, Positions
 
@@ -110,6 +110,7 @@ class Team(Base):
 
     __table_args__ = (
         UniqueConstraint("league_id", "name", name="uq_league_team"),
+        UniqueConstraint("league_id", "id", name="uq_id_league_id"),
         Index("ix_teams_user_id_league_id", "user_id", "league_id")
     )
 
@@ -211,8 +212,13 @@ class TeamPlayer(Base):
     __tablename__ = "team_players"
 
     __table_args__ = (
-        UniqueConstraint("team_id", "player_id", name="uq_team_player"),
-        Index("ix_team_players_team_id", "team_id")
+        UniqueConstraint("league_id", "player_id", name="uq_league_player"),
+        Index("ix_team_players_team_id", "team_id"),
+        ForeignKeyConstraint(
+            ["team_id", "league_id"],
+            ["teams.id", "teams.league_id"],
+            ondelete="CASCADE"
+        )
     )
 
     id: Mapped[int] = mapped_column(
@@ -222,15 +228,20 @@ class TeamPlayer(Base):
         autoincrement=True
     )
 
-    team_id: Mapped[int] = mapped_column(
+    league_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("teams.id", ondelete="CASCADE"),
         nullable=False
     )
+
+    team_id: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False
+    )
+
     player_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("players.id", ondelete="CASCADE"),
-        nullable=True
+        nullable=False
     )
 
 

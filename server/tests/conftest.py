@@ -124,7 +124,7 @@ class AuthClient:
             await self.db.flush()
 
             self.db.add(
-                TeamPlayer(team_id=team1_id, player_id=player.id)
+                TeamPlayer(team_id=team1_id, league_id=1, player_id=player.id)
             )
 
         for p in data["team2"]:
@@ -141,7 +141,7 @@ class AuthClient:
             await self.db.flush()
 
             self.db.add(
-                TeamPlayer(team_id=team2_id, player_id=player.id)
+                TeamPlayer(team_id=team2_id, league_id=1, player_id=player.id)
             )
         
         await self.db.flush()
