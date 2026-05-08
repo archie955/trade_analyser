@@ -1,4 +1,13 @@
+import { useToken } from "../stores/userStore"
+import Login from "./Login";
+
 const Home = () => {
+    const token = useToken();
+
+    if (!token) {
+        return (<Login />)
+    }
+
     return (
         <div>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
