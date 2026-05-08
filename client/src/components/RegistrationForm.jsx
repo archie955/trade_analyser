@@ -1,13 +1,13 @@
 import { useUserActions } from "../stores/userStore";
 import useField from '../hooks/useField'
-import { useChangeActions } from "../stores/loginStore";
+import { useChangeLogin } from "../stores/loginStore";
 
 const RegistrationForm = () => {
-    const { create } = useUserActions();
+    const { login } = useUserActions();
     const username = useField('text');
     const email = useField('text');
     const password = useField('password');
-    const { changeLogin } = useChangeActions();
+    const changeLogin = useChangeLogin();
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -17,7 +17,7 @@ const RegistrationForm = () => {
             password: password.value
         };
 
-        await create(credentials);
+        await login(credentials);
         e.target.reset();
         changeLogin();
     }
