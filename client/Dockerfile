@@ -1,5 +1,5 @@
 # install node
-FROM node:20-alpine as builder
+FROM node:24-alpine as builder
 
 # working directory
 WORKDIR /client

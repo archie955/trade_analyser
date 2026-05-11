@@ -1,6 +1,7 @@
 import { useUserActions } from "../stores/userStore";
 import useField from '../hooks/useField'
 import { useChangeActions } from "../stores/loginStore";
+import { Button } from "./Styled";
 
 const RegistrationForm = () => {
     const { create } = useUserActions();
@@ -36,7 +37,7 @@ const RegistrationForm = () => {
                 password
                 <input name="password" {...password} />
             </label>
-            <button type="submit">Rgister</button>
+            <Button type="submit">Rgister</Button>
         </form>
     )
 }

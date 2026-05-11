@@ -1,6 +1,7 @@
 import { useUserActions } from "../stores/userStore";
 import useField from '../hooks/useField'
 import { useNavigate } from 'react-router-dom'
+import { Button } from "./Styled";
 
 const LoginForm = () => {
     const { login } = useUserActions();
@@ -31,7 +32,7 @@ const LoginForm = () => {
                 password
                 <input name="password" {...password} />
             </label>
-            <button type="submit">Login</button>
+            <Button type="submit">Login</Button>
         </form>
     )
 }
