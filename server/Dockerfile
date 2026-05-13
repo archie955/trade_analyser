@@ -26,4 +26,4 @@ COPY . .
 EXPOSE 8000
 
 # startup command
-CMD ["alembic upgrade head && uvicorn main:app --reload"]
+CMD ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

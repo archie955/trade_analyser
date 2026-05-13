@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 from utils.config import settings
 
-SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.database_username}:{settings.database_password}@{settings.database_hostname}/{settings.database_name}'
+SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_username}:{settings.postgres_password}@{settings.postgres_hostname}/{settings.postgres_name}'
 
 Base = declarative_base()
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True)

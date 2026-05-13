@@ -3,10 +3,16 @@ services:
     image: postgres:16
     container_name: db
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    env_file:
+      - ./.env.dev
     environment:
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_DB: ${POSTGRES_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -23,32 +29,18 @@ services:
       timeout: 5s
       retries: 3
     env_file:
-      - server/.env.dev
+      - ./.env.dev
     container_name: server
     depends_on:
-      - db
-    environment:
-      DATABASE_HOSTNAME: ${DATABASE_HOSTNAME}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_NAME: ${DATABASE_NAME}
+      db:
+        condition: service_healthy
     ports:
       - "8000:8000"
     networks:
       - react-backend-net
+    command: >
+      sh -c "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
 
-  frontend:
-    build:
-      context: ./client
-      args:
-        VITE_BASEURL: /api
-    container_name: client
-    depends_on:
-      - backend
-    ports:
-      - "5173:80"
-    networks:
-      - react-backend-net
 
 networks:
   react-backend-net:

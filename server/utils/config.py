@@ -3,13 +3,14 @@ from pydantic import ConfigDict
 
 class Settings(BaseSettings):
     secret_key: str
-    database_hostname: str
-    database_port: str
-    database_password: str
-    database_name: str
-    database_username: str
+    postgres_hostname: str
+    postgres_port: int
+    postgres_password: str
+    postgres_name: str
+    postgres_username: str
     algorithm: str
     access_token_expire_minutes: int
-    model_config = ConfigDict(env_file=".env.dev")
+    
+    model_config = ConfigDict(case_sensitive=False)
 
 settings = Settings()

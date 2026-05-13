@@ -1,5 +1,5 @@
-__pycache__
 *.pyc
 .git
 node_modules
 tests
+.dockerignore
