@@ -10,8 +10,8 @@ const App = () => {
                 Nothing for now
             </Navigation>
             <Routes>
-                <Route path="" element={<Home />} />
-                <Route path="/login" element={<Login />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="" element={<Login />} />
                 <Route path="/*" element={<Home />} />
             </Routes>
         </div>

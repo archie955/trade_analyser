@@ -20,7 +20,9 @@ const useUserStore = create((set) => ({
                 const response = await loginService.login(credentials);
                 const user = { username: response.username, token: response.token };
                 persistentUserService.saveUser(user);
-                set(() => (user));
+                set(() => ({
+                    username: user.username, token: user.token
+                }));
             } catch (error) {
                 console.error("login failed", error)
             }

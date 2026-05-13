@@ -19,7 +19,7 @@ const LoginForm = () => {
 
         await login(credentials);
         e.target.reset();
-        navigate("");
+        navigate("/home");
     }
 
     return (

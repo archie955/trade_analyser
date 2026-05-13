@@ -3,6 +3,7 @@ import Login from "./Login";
 
 const Home = () => {
     const token = useToken();
+    console.log(token)
 
     if (!token) {
         return (<Login />)

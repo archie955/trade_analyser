@@ -14,6 +14,7 @@ const RegistrationForm = () => {
         e.preventDefault();
 
         const credentials = {
+            email: email.value,
             username: username.value,
             password: password.value
         };
@@ -37,7 +38,7 @@ const RegistrationForm = () => {
                 password
                 <input name="password" {...password} />
             </label>
-            <Button type="submit">Rgister</Button>
+            <Button type="submit">Register</Button>
         </form>
     )
 }

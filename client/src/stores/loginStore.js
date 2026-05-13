@@ -3,7 +3,7 @@ import { create } from "zustand";
 const useLoginStore = create((set) => ({
     login: true,
     actions: {
-        changeLogin: set(login => !login)
+        changeLogin: () => set(state => ({ login: !state.login }))
     }
 }))
 
