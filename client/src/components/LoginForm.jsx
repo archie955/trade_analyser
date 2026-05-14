@@ -1,7 +1,7 @@
 import { useUserActions } from "../stores/userStore";
 import useField from '../hooks/useField'
 import { useNavigate } from 'react-router-dom'
-import { Button } from "./Styled";
+import Styled from "./Styled";
 
 const LoginForm = () => {
     const { login } = useUserActions();
@@ -24,15 +24,17 @@ const LoginForm = () => {
 
     return (
         <form onSubmit={handleLogin}>
-            <label>
-                username
-                <input name="username" {...username} />
-            </label>
-            <label>
-                password
-                <input name="password" {...password} />
-            </label>
-            <Button type="submit">Login</Button>
+            <Styled.FormDiv>
+                <Styled.Label>
+                    username
+                    <input name="username" {...username} />
+                </Styled.Label>
+                <Styled.Label>
+                    password
+                    <input name="password" {...password} />
+                </Styled.Label>
+                <Styled.Button type="submit">Login</Styled.Button>
+            </Styled.FormDiv>
         </form>
     )
 }

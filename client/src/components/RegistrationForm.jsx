@@ -1,7 +1,7 @@
 import { useUserActions } from "../stores/userStore";
 import useField from '../hooks/useField'
 import { useChangeActions } from "../stores/loginStore";
-import { Button } from "./Styled";
+import Styled from "./Styled";
 
 const RegistrationForm = () => {
     const { create } = useUserActions();
@@ -26,19 +26,21 @@ const RegistrationForm = () => {
 
     return (
         <form onSubmit={handleRegister}>
-            <label>
-                email
-                <input name="email" {...email} />
-            </label>
-            <label>
-                username
-                <input name="username" {...username} />
-            </label>
-            <label>
-                password
-                <input name="password" {...password} />
-            </label>
-            <Button type="submit">Register</Button>
+            <Styled.FormDiv>
+                <label>
+                    email
+                    <input name="email" {...email} />
+                </label>
+                <label>
+                    username
+                    <input name="username" {...username} />
+                </label>
+                <label>
+                    password
+                    <input name="password" {...password} />
+                </label>
+                <Styled.Button type="submit">Register</Styled.Button>
+            </Styled.FormDiv>
         </form>
     )
 }

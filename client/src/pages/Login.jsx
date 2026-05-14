@@ -1,7 +1,7 @@
 import { useLogin, useChangeActions } from "../stores/loginStore";
 import RegistrationForm from "../components/RegistrationForm";
 import LoginForm from "../components/LoginForm";
-import { Button } from "../components/Styled";
+import Styled from "../components/Styled";
 import axios from "axios";
 
 const Login = () => {
@@ -16,8 +16,8 @@ const Login = () => {
     return (
         <div>
             {(login && <LoginForm />) || (!login && <RegistrationForm />)}
-            <Button type="button" onClick={() => changeLogin()}>{login ? "Register an account?" : "Already have an account?"}</Button>
-            <Button type="button" onClick={() => handleTest()}>Test</Button>
+            <Styled.Button type="button" onClick={() => changeLogin()}>{login ? "Register an account?" : "Already have an account?"}</Styled.Button>
+            <Styled.Button type="button" onClick={() => handleTest()}>Test</Styled.Button>
         </div>
     )
 }

@@ -1,14 +1,14 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import { Navigation } from "./components/Styled";
+import Styled from "./components/Styled";
 
 const App = () => {
     return (
         <div>
-            <Navigation>
+            <Styled.Navigation>
                 Nothing for now
-            </Navigation>
+            </Styled.Navigation>
             <Routes>
                 <Route path="/home" element={<Home />} />
                 <Route path="" element={<Login />} />
