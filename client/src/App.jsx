@@ -1,18 +1,25 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Styled from "./components/Styled";
+import { CssBaseline } from "@mui/material";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Leagues from "./pages/Leagues";
 
 const App = () => {
     return (
         <div>
-            <Styled.Navigation>
-                Nothing for now
-            </Styled.Navigation>
+            <CssBaseline />
             <Routes>
-                <Route path="/home" element={<Home />} />
+                <Route path="/home" element={
+                    <ProtectedRoute>
+                        <Home />
+                    </ProtectedRoute>} />
                 <Route path="" element={<Login />} />
-                <Route path="/*" element={<Home />} />
+                <Route path="/leagues" element={
+                    <ProtectedRoute>
+                        <Leagues />
+                    </ProtectedRoute>
+                } />
             </Routes>
         </div>
     )

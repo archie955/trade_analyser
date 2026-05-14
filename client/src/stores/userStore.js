@@ -18,7 +18,7 @@ const useUserStore = create((set) => ({
         login: async (credentials) => {
             try {
                 const response = await loginService.login(credentials);
-                const user = { username: response.username, token: response.token };
+                const user = { username: credentials.username, token: response.access_token };
                 persistentUserService.saveUser(user);
                 set(() => ({
                     username: user.username, token: user.token

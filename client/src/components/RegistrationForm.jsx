@@ -1,9 +1,11 @@
 import { useUserActions } from "../stores/userStore";
 import useField from '../hooks/useField'
 import { useChangeActions } from "../stores/loginStore";
-import Styled from "./Styled";
+import { useState } from "react";
+import { Button, FormControl, Input, InputLabel, Card } from '@mui/material'
 
 const RegistrationForm = () => {
+    const [loading, setLoading] = useState(false)
     const { create } = useUserActions();
     const username = useField('text');
     const email = useField('text');
@@ -12,6 +14,7 @@ const RegistrationForm = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        setLoading(true)
 
         const credentials = {
             email: email.value,
@@ -21,27 +24,28 @@ const RegistrationForm = () => {
 
         await create(credentials);
         e.target.reset();
+        setLoading(false)
         changeLogin();
     }
 
     return (
-        <form onSubmit={handleRegister}>
-            <Styled.FormDiv>
-                <label>
-                    email
-                    <input name="email" {...email} />
-                </label>
-                <label>
-                    username
-                    <input name="username" {...username} />
-                </label>
-                <label>
-                    password
-                    <input name="password" {...password} />
-                </label>
-                <Styled.Button type="submit">Register</Styled.Button>
-            </Styled.FormDiv>
-        </form>
+        <Card>
+            <form onSubmit={handleRegister}>
+                <FormControl>
+                    <InputLabel htmlFor="email">Email</InputLabel>
+                    <Input id="email" {...email} />
+                </FormControl>
+                <FormControl>
+                    <InputLabel htmlFor="username">Username</InputLabel>
+                    <Input id="username" {...username} />
+                </FormControl>
+                <FormControl>
+                    <InputLabel htmlFor="password">Password</InputLabel>
+                    <Input id="password" {...password} />
+                </FormControl>
+                <Button variant="contained" type="submit" loading={loading} loadingPosition="end" size="medium">REGISTER</Button>
+            </form>
+        </Card>
     )
 }
 

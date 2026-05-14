@@ -2,8 +2,7 @@ import { useUserActions } from "../stores/userStore";
 import { useState } from "react";
 import useField from '../hooks/useField'
 import { useNavigate } from 'react-router-dom'
-import Styled from "./Styled";
-import { TextField, Button } from '@mui/material'
+import { Button, FormControl, Input, InputLabel, Card } from '@mui/material'
 
 const LoginForm = () => {
     const [loading, setLoading] = useState(false)
@@ -28,17 +27,19 @@ const LoginForm = () => {
     }
 
     return (
-        <form onSubmit={handleLogin}>
-            <Styled.Label>
-                username
-                <input name="username" {...username} />
-            </Styled.Label>
-            <Styled.Label>
-                password
-                <input name="password" {...password} />
-            </Styled.Label>
-            <Button variant="contained" type="submit" loading={loading} loadingPosition="end" size="medium">LOGIN</Button>
-        </form>
+        <Card>
+            <form onSubmit={handleLogin}>
+                <FormControl>
+                    <InputLabel htmlFor="username">Username or Email</InputLabel>
+                    <Input id="username" {...username} />
+                </FormControl>
+                <FormControl>
+                    <InputLabel htmlFor="password">Password</InputLabel>
+                    <Input id="password" {...password} />
+                </FormControl>
+                <Button variant="contained" type="submit" loading={loading} loadingPosition="end" size="medium">LOGIN</Button>
+            </form>
+        </Card>
     )
 }
 
