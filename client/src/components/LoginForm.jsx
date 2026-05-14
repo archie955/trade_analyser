@@ -1,9 +1,12 @@
 import { useUserActions } from "../stores/userStore";
+import { useState } from "react";
 import useField from '../hooks/useField'
 import { useNavigate } from 'react-router-dom'
 import Styled from "./Styled";
+import { TextField, Button } from '@mui/material'
 
 const LoginForm = () => {
+    const [loading, setLoading] = useState(false)
     const { login } = useUserActions();
     const navigate = useNavigate();
     const username = useField('text');
@@ -11,6 +14,7 @@ const LoginForm = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true)
 
         const credentials = {
             username: username.value,
@@ -19,22 +23,21 @@ const LoginForm = () => {
 
         await login(credentials);
         e.target.reset();
+        setLoading(false)
         navigate("/home");
     }
 
     return (
         <form onSubmit={handleLogin}>
-            <Styled.FormDiv>
-                <Styled.Label>
-                    username
-                    <input name="username" {...username} />
-                </Styled.Label>
-                <Styled.Label>
-                    password
-                    <input name="password" {...password} />
-                </Styled.Label>
-                <Styled.Button type="submit">Login</Styled.Button>
-            </Styled.FormDiv>
+            <Styled.Label>
+                username
+                <input name="username" {...username} />
+            </Styled.Label>
+            <Styled.Label>
+                password
+                <input name="password" {...password} />
+            </Styled.Label>
+            <Button variant="contained" type="submit" loading={loading} loadingPosition="end" size="medium">LOGIN</Button>
         </form>
     )
 }
