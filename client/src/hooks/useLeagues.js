@@ -34,7 +34,7 @@ const useLeagues = () => {
     return {
         leagues: result.data,
         isPending: result.isPending,
-        addLeague: (name) => newLeagueMutation.mutate({ name: name }),
+        addLeague: (league) => newLeagueMutation.mutate(league),
         renameLeague: (league) => updateLeagueMutation.mutate({ ...league }),
         deleteLeague: (id) => deleteLeagueMutation.mutate(id)
     }

@@ -4,8 +4,16 @@ import Login from "./pages/Login";
 import { CssBaseline } from "@mui/material";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Leagues from "./pages/Leagues";
+import { useEffect } from "react";
+import { useUserActions } from "./stores/userStore";
 
 const App = () => {
+    const { init } = useUserActions()
+
+    useEffect(() => {
+        init()
+    }, [])
+    
     return (
         <div>
             <CssBaseline />

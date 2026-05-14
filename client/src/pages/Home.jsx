@@ -1,4 +1,5 @@
-import { Breadcrumbs, Link } from "@mui/material";
+import { Breadcrumbs } from "@mui/material";
+import { Link } from "react-router-dom";
 import Navigation from "../components/Navigation";
 
 const Home = () => {
@@ -7,11 +8,14 @@ const Home = () => {
         <div>
             <Navigation>
                 <Breadcrumbs aria-label="breadcumb" color={'#fff'}>
-                    <Link underline="hover" color="inherit" href="/" sx={{font: 'IBM Plex Mono', fontSize: '1.5em'}}>
+                    <Link to="/">
                         Login
                     </Link>
-                    <Link underline="hover" color="inherit" href="/leagues" sx={{fontSize: '1.5em'}}>
+                    <Link to="/leagues">
                         Leagues
+                    </Link>
+                    <Link to="/home">
+                        Home
                     </Link>
                 </Breadcrumbs>
             </Navigation>

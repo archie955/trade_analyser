@@ -9,6 +9,15 @@ const LeagueTable = () => {
         return <div>loading data...</div>
     }
 
+    if (leagues.leagues.length === 0) {
+        return (
+            <div>
+                <div>No leagues yet...</div>
+                <LeagueForm />
+            </div>
+        )
+    }
+
     return (
         <div>
             <TableContainer component={Paper}>
@@ -20,7 +29,7 @@ const LeagueTable = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {leagues.map(league => (
+                        {leagues.leagues.map(league => (
                             <TableRow key={league.id}>
                                 <TableCell>{league.name}</TableCell>
                                 <TableCell>{league.created_at}</TableCell>
