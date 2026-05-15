@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import { CssBaseline } from "@mui/material";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Leagues from "./pages/Leagues";
+import League from './pages/League'
 import { useEffect } from "react";
 import { useUserActions } from "./stores/userStore";
 
@@ -26,6 +27,11 @@ const App = () => {
                 <Route path="/leagues" element={
                     <ProtectedRoute>
                         <Leagues />
+                    </ProtectedRoute>
+                } />
+                <Route path="/leagues/:id" element={
+                    <ProtectedRoute>
+                        <League />
                     </ProtectedRoute>
                 } />
             </Routes>

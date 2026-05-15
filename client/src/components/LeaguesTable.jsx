@@ -1,9 +1,12 @@
 import useLeagues from "../hooks/useLeagues";
 import LeagueForm from "./CreateLeagueForm";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
+import { useState } from "react";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material'
+import { Link } from "react-router-dom";
 
 const LeagueTable = () => {
-    const { leagues, isPending } = useLeagues()
+    const { leagues, isPending, deleteLeague } = useLeagues()
+    const [loading, setLoading] = useState(false)
 
     if (isPending) {
         return <div>loading data...</div>
@@ -18,6 +21,14 @@ const LeagueTable = () => {
         )
     }
 
+    const handleDeleteLeague = async (id) => {
+        setLoading(true)
+        await deleteLeague(id)
+        setLoading(false)
+    }
+
+
+
     return (
         <div>
             <TableContainer component={Paper}>
@@ -31,8 +42,13 @@ const LeagueTable = () => {
                     <TableBody>
                         {leagues.leagues.map(league => (
                             <TableRow key={league.id}>
-                                <TableCell>{league.name}</TableCell>
+                                <TableCell>
+                                    <Link to={`/leagues/${league.id}`}>
+                                        {league.name}
+                                    </Link>
+                                </TableCell>
                                 <TableCell>{league.created_at}</TableCell>
+                                <TableCell><Button variant="contained" type="button" onClick={() => handleDeleteLeague(league.id)} loading={loading} loadingPosition="end" size="medium">DELETE</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
