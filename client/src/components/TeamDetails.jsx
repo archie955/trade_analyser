@@ -1,23 +1,23 @@
-import useLeagues from "../hooks/useLeagues"
-import useField from "../hooks/useField"
-import { useState } from "react"
-import { Button, Input, InputLabel, Card, FormControl } from "@mui/material"
+import useTeams from "../hooks/useTeams";
+import useField from "../hooks/useField";
+import { useState } from "react";
+import { Button, Input, InputLabel, Card, FormControl } from "@mui/material";
 
-const LeagueDetails = ({ league }) => {
-    const { renameLeague } = useLeagues()
+const TeamDetails = ({ team }) => {
+    const { renameTeam } = useTeams(team.league_id)
     const [loading, setLoading] = useState(false)
     const [editing, setEditing] = useState(false)
     const updatedName = useField('text')
 
-    const handleUpdateLeague = async (e) => {
+    const handleUpdateTeam = async (e) => {
         e.preventDefault()
         setLoading(true)
 
-        const updatedLeague = {
-            ...league,
+        const updatedTeam = {
+            ...team,
             name: updatedName.value
         }
-        await renameLeague(updatedLeague)
+        await renameTeam(updatedTeam)
         e.target.reset()
         setLoading(false)
     }
@@ -25,12 +25,12 @@ const LeagueDetails = ({ league }) => {
     return (
         <div>
             <div>
-                {league.name} was created at {league.created_at}
+                {team.name} was created at {team.created_at}
                 <Button variant="contained" type="button" onClick={() => setEditing(!editing)} size="medium">{editing ? "CANCEL" : "EDIT?"}</Button>
             </div>
             {editing && (
                 <Card>
-                    <form onSubmit={handleUpdateLeague}>
+                    <form onSubmit={handleUpdateTeam}>
                         <FormControl>
                             <InputLabel htmlFor="newname">New name</InputLabel>
                             <Input id="newname" {...updatedName} />
@@ -43,4 +43,4 @@ const LeagueDetails = ({ league }) => {
     )
 }
 
-export default LeagueDetails
+export default TeamDetails

@@ -7,6 +7,7 @@ import Leagues from "./pages/Leagues";
 import League from './pages/League'
 import { useEffect } from "react";
 import { useUserActions } from "./stores/userStore";
+import Team from "./pages/Team";
 
 const App = () => {
     const { init } = useUserActions()
@@ -32,6 +33,11 @@ const App = () => {
                 <Route path="/leagues/:id" element={
                     <ProtectedRoute>
                         <League />
+                    </ProtectedRoute>
+                } />
+                <Route path="/leagues/:league_id/:id" element={
+                    <ProtectedRoute>
+                        <Team />
                     </ProtectedRoute>
                 } />
             </Routes>
