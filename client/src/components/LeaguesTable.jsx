@@ -1,7 +1,10 @@
 import useLeagues from "../hooks/useLeagues";
 import LeagueForm from "./CreateLeagueForm";
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material'
+import { 
+    Table, TableBody, TableCell, 
+    TableContainer, TableHead, 
+    TableRow, Paper, Button } from '@mui/material'
 import { Link } from "react-router-dom";
 
 const LeagueTable = () => {

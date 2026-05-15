@@ -1,6 +1,8 @@
 import LeagueDetails from '../components/LeagueDetails'
 import { useParams } from 'react-router-dom'
 import useLeagues from '../hooks/useLeagues'
+import TeamTable from '../components/TeamsTable'
+import TeamForm from '../components/CreateTeamForm'
 
 const League = () => {
     const { id } = useParams()
@@ -16,7 +18,11 @@ const League = () => {
     }
 
     return (
-        <LeagueDetails league={league}/>
+        <div>
+            <LeagueDetails league={league} />
+            <TeamTable id={league.id} />
+            <TeamForm id={league.id} />
+        </div>
     )
 }
 
