@@ -7,12 +7,15 @@ config = ConfigDict(from_attributes=True)
 
 # USERS
 
+
 class User(BaseModel):
     email: EmailStr
     username: str
 
+
 class UserCreate(User):
     password: str
+
 
 class UserOut(User):
     model_config = config
@@ -20,42 +23,55 @@ class UserOut(User):
     created_at: datetime
     updated_at: datetime
 
+
 class UserUpdate(BaseModel):
     updated_user: UserCreate
     password: str
 
+
 # TOKENS
+
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class TokenData(BaseModel):
     id: Optional[str]
 
+
 # LEAGUES
+
 
 class LeagueCreate(BaseModel):
     name: str
 
+
 class LeagueUpdate(LeagueCreate):
     id: int
+
 
 class LeagueOut(LeagueUpdate):
     created_at: datetime
     updated_at: datetime
     model_config = config
 
+
 class Leagues(BaseModel):
     leagues: List[LeagueOut]
 
+
 # TEAMS
+
 
 class TeamCreate(BaseModel):
     name: str
 
+
 class TeamUpdate(TeamCreate):
     id: int
+
 
 class TeamOut(TeamUpdate):
     league_id: int
@@ -63,13 +79,17 @@ class TeamOut(TeamUpdate):
     updated_at: datetime
     model_config = config
 
+
 class Teams(BaseModel):
     teams: List[TeamOut]
 
+
 # PLAYERS
+
 
 class PlayerIn(BaseModel):
     id: int
+
 
 class PlayerOut(PlayerIn):
     id: int
@@ -81,6 +101,7 @@ class PlayerOut(PlayerIn):
     points_noppr: float
     model_config = config
 
+
 class TeamPlayers(BaseModel):
     players: List[PlayerOut]
     model_config = config
@@ -88,10 +109,12 @@ class TeamPlayers(BaseModel):
 
 # TRADES
 
+
 class TradePlayer(BaseModel):
     id: int
     name: str
     model_config = config
+
 
 class Trade(BaseModel):
     players_1: List[TradePlayer]
@@ -99,5 +122,6 @@ class Trade(BaseModel):
     players_2: List[TradePlayer]
     gain_2: float
     model_config = config
+
 
 TradeOut = RootModel[Dict[str, List[Trade]]]

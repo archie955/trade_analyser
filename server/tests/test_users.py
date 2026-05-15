@@ -1,5 +1,6 @@
 # Registration endpoint testing
 
+
 async def test_registration(client, helpers):
     response = await helpers.register_user(client)
 
@@ -15,6 +16,7 @@ async def test_duplicate_email_registration(client, helpers):
 
     assert response.status_code == 409
 
+
 async def test_duplicate_username_registration(client, helpers):
     user = await helpers.register_user(client)
 
@@ -22,6 +24,7 @@ async def test_duplicate_username_registration(client, helpers):
     response = await client.post("/users", json=user)
 
     assert response.status_code == 409
+
 
 async def test_duplicate_password_ok(client, helpers):
     user = await helpers.register_user(client)
@@ -33,41 +36,36 @@ async def test_duplicate_password_ok(client, helpers):
 
     assert response.status_code == 201
 
+
 async def test_missing_username_registration(client):
-    user = {
-        "email": "missingdata@example.com",
-        "password": "missingdata"
-    }
+    user = {"email": "missingdata@example.com", "password": "missingdata"}
 
     response = await client.post("/users", json=user)
 
     assert response.status_code == 422
+
 
 async def test_missing_email_registration(client):
-    user = {
-        "username": "missingdatauser",
-        "password": "missingdata"
-    }
+    user = {"username": "missingdatauser", "password": "missingdata"}
 
     response = await client.post("/users", json=user)
 
     assert response.status_code == 422
+
 
 async def test_missing_password_registration(client):
-    user = {
-        "email": "missingdata@example.com",
-        "username": "missingdata"
-    }
+    user = {"email": "missingdata@example.com", "username": "missingdata"}
 
     response = await client.post("/users", json=user)
 
     assert response.status_code == 422
+
 
 async def test_incorrect_email_type(client):
     user = {
         "email": "incorrectgmail.com",
         "username": "incorrect",
-        "password": "password"
+        "password": "password",
     }
 
     response = await client.post("/users", json=user)
@@ -77,23 +75,20 @@ async def test_incorrect_email_type(client):
 
 # Login endpoint testing
 
+
 async def test_login_email(client, helpers):
     response = await helpers.full_login(client)
 
     assert "access_token" in response
+
 
 async def test_login_username(client, helpers):
     user = await helpers.register_user(client)
 
     response = await client.post(
         "/users/login",
-        data={
-            "username": user["username"],
-            "password": user["password"]
-        },
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+        data={"username": user["username"], "password": user["password"]},
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
 
     assert response.status_code == 200
@@ -103,40 +98,33 @@ async def test_login_username(client, helpers):
     assert "access_token" in data
     assert data["token_type"] == "bearer"
 
+
 async def test_incorrect_password(client, helpers):
     user = await helpers.register_user(client)
 
     response = await client.post(
         "/users/login",
-        data={
-            "username": user["email"],
-            "password": "incorrectpassword"
-        },
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+        data={"username": user["email"], "password": "incorrectpassword"},
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
 
     assert response.status_code == 403
+
 
 async def test_incorrect_email(client, helpers):
     user = await helpers.register_user(client)
 
     response = await client.post(
         "/users/login",
-        data={
-            "username": "notroot",
-            "password": user["password"]
-        },
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+        data={"username": "notroot", "password": user["password"]},
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
 
     assert response.status_code == 403
 
 
 # test update endpoint
+
 
 async def test_update_email(client, helpers):
     user = await helpers.full_login(client)
@@ -145,14 +133,15 @@ async def test_update_email(client, helpers):
         "updated_user": {
             "email": "newemail@example.com",
             "username": user["username"],
-            "password": user["password"]
+            "password": user["password"],
         },
-        "password": user["password"]
+        "password": user["password"],
     }
     response = await helpers.update_user(client, updated_payload, user)
 
     assert response["email"] == "newemail@example.com"
     assert response["username"] == user["username"]
+
 
 async def test_update_username(client, helpers):
     user = await helpers.full_login(client)
@@ -160,14 +149,15 @@ async def test_update_username(client, helpers):
         "updated_user": {
             "email": user["email"],
             "username": "newusername",
-            "password": user["password"]
+            "password": user["password"],
         },
-        "password": user["password"]
+        "password": user["password"],
     }
     response = await helpers.update_user(client, updated_payload, user)
 
     assert response["email"] == user["email"]
     assert response["username"] == "newusername"
+
 
 async def test_update_password(client, helpers):
     user = await helpers.full_login(client)
@@ -176,15 +166,16 @@ async def test_update_password(client, helpers):
         "updated_user": {
             "email": user["email"],
             "username": user["username"],
-            "password": "newpassword"
+            "password": "newpassword",
         },
-        "password": user["password"]
+        "password": user["password"],
     }
 
     response = await helpers.update_user(client, updated_payload, user)
 
     assert response["email"] == user["email"]
     assert response["username"] == user["username"]
+
 
 async def test_update_incorrect_password(client, helpers):
     user = await helpers.full_login(client)
@@ -193,17 +184,16 @@ async def test_update_incorrect_password(client, helpers):
         "updated_user": {
             "email": "newemail@example.com",
             "username": user["username"],
-            "password": user["password"]
+            "password": user["password"],
         },
-        "password": "incorrect"
+        "password": "incorrect",
     }
     response = await client.put(
-        "/users",
-        json=updated_payload,
-        headers=helpers.auth_headers(user)
-        )
-    
+        "/users", json=updated_payload, headers=helpers.auth_headers(user)
+    )
+
     assert response.status_code == 401
+
 
 async def test_update_same_info(client, helpers):
     user = await helpers.full_login(client)
@@ -212,16 +202,14 @@ async def test_update_same_info(client, helpers):
         "updated_user": {
             "email": user["email"],
             "username": user["username"],
-            "password": user["password"]
+            "password": user["password"],
         },
-        "password": user["password"]
+        "password": user["password"],
     }
     response = await client.put(
-        "/users",
-        json=updated_payload,
-        headers=helpers.auth_headers(user)
-        )
-    
+        "/users", json=updated_payload, headers=helpers.auth_headers(user)
+    )
+
     assert response.status_code == 400
 
 
@@ -231,18 +219,18 @@ async def test_update_same_info(client, helpers):
 async def test_delete(client, helpers):
     user = await helpers.full_login(client)
 
-    response = await client.delete("/users",
-                             headers=helpers.auth_headers(user)
-                             )
-    
+    response = await client.delete("/users", headers=helpers.auth_headers(user))
+
     assert response.status_code == 204
 
+
 async def test_delete_not_logged_in(client, helpers):
-    user = await helpers.register_user(client)
+    await helpers.register_user(client)
 
     response = await client.delete("/users")
 
     assert response.status_code == 401
+
 
 async def test_delete_logged_in_no_headers(client, helpers):
     response = await helpers.full_login(client)

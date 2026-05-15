@@ -15,10 +15,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
-CREDENTIALS_EXCEPTION = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                      detail="Could not validate credentials",
-                                      headers={"WWW-Authenticate": "Bearer"}
-                                      )
+CREDENTIALS_EXCEPTION = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
@@ -26,124 +28,131 @@ def create_access_token(data: dict) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire, "type": "access"})
 
-    encoded_jwt = jwt.encode(
-        to_encode,
-        SECRET_KEY,
-        algorithm=ALGORITHM
-    )
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
 
+
 def decode_token(token: str) -> Dict[str, Any]:
     try:
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM]
-        )
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except jwt.exceptions.InvalidTokenError:
         raise CREDENTIALS_EXCEPTION
-    
-def verify_access_token(token:str) -> schemas.TokenData:
+
+
+def verify_access_token(token: str) -> schemas.TokenData:
     payload = decode_token(token)
 
     if payload.get("type") != "access":
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token type"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type"
         )
-    
+
     user_id = payload.get("sub")
 
     if user_id is None:
         raise CREDENTIALS_EXCEPTION
-    
+
     return schemas.TokenData(id=user_id)
 
+
 async def get_current_user(
-        token: str = Depends(oauth2_scheme),
-        db: AsyncSession = Depends(get_db)
+    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
 ) -> models.User:
     user_id_token = verify_access_token(token=token)
 
-    user = (await db.execute(select(models.User).where(
-        models.User.id == int(user_id_token.id)
-    ))).scalar_one_or_none()
+    user = (
+        await db.execute(
+            select(models.User).where(models.User.id == int(user_id_token.id))
+        )
+    ).scalar_one_or_none()
 
     if not user:
         raise CREDENTIALS_EXCEPTION
-    
+
     return user
 
+
 async def get_current_league(
-        league_id: int = Path(..., description="ID of the league"),
-        user: models.User = Depends(get_current_user),
-        db: AsyncSession = Depends(get_db)
+    league_id: int = Path(..., description="ID of the league"),
+    user: models.User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> models.League:
-    
-    league = (await db.execute(select(models.League).where(
-        models.League.user_id == user.id,
-        models.League.id == league_id
-    ))).scalar_one_or_none()
+
+    league = (
+        await db.execute(
+            select(models.League).where(
+                models.League.user_id == user.id, models.League.id == league_id
+            )
+        )
+    ).scalar_one_or_none()
 
     if not league:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"League with id {league_id} not found"
+            detail=f"League with id {league_id} not found",
         )
-    
+
     return league
 
+
 async def get_current_team(
-        league_id: int = Path(..., description="ID of the league"),
-        team_id: int = Path(..., description="ID of the team"),
-        user: models.User = Depends(get_current_user),
-        db: AsyncSession = Depends(get_db)
+    league_id: int = Path(..., description="ID of the league"),
+    team_id: int = Path(..., description="ID of the team"),
+    user: models.User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> models.Team:
-    
-    team = (await db.execute(
-        select(models.Team)
-        .options(selectinload(models.Team.players))
-        .where(
-            models.Team.id == team_id,
-            models.Team.league_id == league_id,
-            models.Team.user_id == user.id
+
+    team = (
+        await db.execute(
+            select(models.Team)
+            .options(selectinload(models.Team.players))
+            .where(
+                models.Team.id == team_id,
+                models.Team.league_id == league_id,
+                models.Team.user_id == user.id,
+            )
         )
-    )).scalar_one_or_none()
+    ).scalar_one_or_none()
 
     if not team:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Team with id {team_id} not found"
+            detail=f"Team with id {team_id} not found",
         )
 
     return team
 
+
 async def get_current_players(
-        league_id: int = Path(..., description="ID of the league"),
-        team_id: int = Path(..., description="ID of the team"),
-        user: models.User = Depends(get_current_user),
-        db: AsyncSession = Depends(get_db)
+    league_id: int = Path(..., description="ID of the league"),
+    team_id: int = Path(..., description="ID of the team"),
+    user: models.User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> models.Team:
-    
-    team = (await db.execute(
-        select(models.Team)
-        .options(
-            selectinload(models.Team.players),
-            selectinload(models.Team.league).selectinload(models.League.teams).selectinload(models.Team.players)
+
+    team = (
+        await db.execute(
+            select(models.Team)
+            .options(
+                selectinload(models.Team.players),
+                selectinload(models.Team.league)
+                .selectinload(models.League.teams)
+                .selectinload(models.Team.players),
+            )
+            .where(
+                models.Team.id == team_id,
+                models.Team.league_id == league_id,
+                models.Team.user_id == user.id,
+            )
         )
-        .where(
-            models.Team.id == team_id,
-            models.Team.league_id == league_id,
-            models.Team.user_id == user.id
-        )
-    )).scalar_one_or_none()
+    ).scalar_one_or_none()
 
     if not team:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Team with id {team_id} not found"
+            detail=f"Team with id {team_id} not found",
         )
 
     return team
