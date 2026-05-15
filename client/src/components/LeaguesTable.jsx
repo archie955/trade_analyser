@@ -1,18 +1,24 @@
-import useLeagues from '../hooks/useLeagues'
-import LeagueForm from './CreateLeagueForm'
-import { useState } from 'react'
+import useLeagues from "../hooks/useLeagues";
+import LeagueForm from "./CreateLeagueForm";
+import { useState } from "react";
 import {
-  Table, TableBody, TableCell,
-  TableContainer, TableHead,
-  TableRow, Paper, Button } from '@mui/material'
-import { Link } from 'react-router-dom'
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+} from "@mui/material";
+import { Link } from "react-router-dom";
 
 const LeagueTable = () => {
-  const { leagues, isPending, deleteLeague } = useLeagues()
-  const [loading, setLoading] = useState(false)
+  const { leagues, isPending, deleteLeague } = useLeagues();
+  const [loading, setLoading] = useState(false);
 
   if (isPending) {
-    return <div>loading data...</div>
+    return <div>loading data...</div>;
   }
 
   if (leagues.leagues.length === 0) {
@@ -21,16 +27,14 @@ const LeagueTable = () => {
         <div>No leagues yet...</div>
         <LeagueForm />
       </div>
-    )
+    );
   }
 
   const handleDeleteLeague = async (id) => {
-    setLoading(true)
-    await deleteLeague(id)
-    setLoading(false)
-  }
-
-
+    setLoading(true);
+    await deleteLeague(id);
+    setLoading(false);
+  };
 
   return (
     <div>
@@ -43,15 +47,24 @@ const LeagueTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {leagues.leagues.map(league => (
+            {leagues.leagues.map((league) => (
               <TableRow key={league.id}>
                 <TableCell>
-                  <Link to={`/leagues/${league.id}`}>
-                    {league.name}
-                  </Link>
+                  <Link to={`/leagues/${league.id}`}>{league.name}</Link>
                 </TableCell>
                 <TableCell>{league.created_at}</TableCell>
-                <TableCell><Button variant="contained" type="button" onClick={() => handleDeleteLeague(league.id)} loading={loading} loadingPosition="end" size="medium">DELETE</Button></TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    type="button"
+                    onClick={() => handleDeleteLeague(league.id)}
+                    loading={loading}
+                    loadingPosition="end"
+                    size="medium"
+                  >
+                    DELETE
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -59,7 +72,7 @@ const LeagueTable = () => {
       </TableContainer>
       <LeagueForm />
     </div>
-  )
-}
+  );
+};
 
-export default LeagueTable
+export default LeagueTable;

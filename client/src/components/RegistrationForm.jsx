@@ -1,32 +1,32 @@
-import { useUserActions } from '../stores/userStore'
-import useField from '../hooks/useField'
-import { useChangeActions } from '../stores/loginStore'
-import { useState } from 'react'
-import { Button, FormControl, Input, InputLabel, Card } from '@mui/material'
+import { useUserActions } from "../stores/userStore";
+import useField from "../hooks/useField";
+import { useChangeActions } from "../stores/loginStore";
+import { useState } from "react";
+import { Button, FormControl, Input, InputLabel, Card } from "@mui/material";
 
 const RegistrationForm = () => {
-  const [loading, setLoading] = useState(false)
-  const { create } = useUserActions()
-  const username = useField('text')
-  const email = useField('text')
-  const password = useField('password')
-  const { changeLogin } = useChangeActions()
+  const [loading, setLoading] = useState(false);
+  const { create } = useUserActions();
+  const username = useField("text");
+  const email = useField("text");
+  const password = useField("password");
+  const { changeLogin } = useChangeActions();
 
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     const credentials = {
       email: email.value,
       username: username.value,
-      password: password.value
-    }
+      password: password.value,
+    };
 
-    await create(credentials)
-    e.target.reset()
-    setLoading(false)
-    changeLogin()
-  }
+    await create(credentials);
+    e.target.reset();
+    setLoading(false);
+    changeLogin();
+  };
 
   return (
     <Card>
@@ -43,10 +43,18 @@ const RegistrationForm = () => {
           <InputLabel htmlFor="password">Password</InputLabel>
           <Input id="password" {...password} />
         </FormControl>
-        <Button variant="contained" type="submit" loading={loading} loadingPosition="end" size="medium">REGISTER</Button>
+        <Button
+          variant="contained"
+          type="submit"
+          loading={loading}
+          loadingPosition="end"
+          size="medium"
+        >
+          REGISTER
+        </Button>
       </form>
     </Card>
-  )
-}
+  );
+};
 
-export default RegistrationForm
+export default RegistrationForm;

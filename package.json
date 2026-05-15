@@ -1,8 +1,9 @@
 {
     "scripts": {
-        "dev": "concurrently \"npm run dev --prefix client\" \"uvicorn main::app --reload --prefix server\"",
+        "dev": "concurrently \"npm run dev --prefix client\" \"uvicorn main::app --reload --prefix server\""
     },
     "devDependencies": {
-        "concurrently": "^9.2.1"
+        "concurrently": "^9.2.1",
+        "prettier": "3.8.3"
     }
 }

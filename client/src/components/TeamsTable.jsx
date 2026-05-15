@@ -1,17 +1,23 @@
-import useTeams from '../hooks/useTeams'
-import { useState } from 'react'
+import useTeams from "../hooks/useTeams";
+import { useState } from "react";
 import {
-  Table, TableBody, TableCell,
-  TableContainer, TableHead,
-  TableRow, Paper, Button } from '@mui/material'
-import { Link } from 'react-router-dom'
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+} from "@mui/material";
+import { Link } from "react-router-dom";
 
 const TeamTable = ({ id }) => {
-  const { teams, isPending, deleteTeam } = useTeams(id)
-  const [loading, setLoading] = useState(false)
+  const { teams, isPending, deleteTeam } = useTeams(id);
+  const [loading, setLoading] = useState(false);
 
   if (isPending) {
-    return <div>loading data...</div>
+    return <div>loading data...</div>;
   }
 
   if (teams.teams.length === 0) {
@@ -19,14 +25,14 @@ const TeamTable = ({ id }) => {
       <div>
         <div>No teams yet</div>
       </div>
-    )
+    );
   }
 
   const handleDeleteTeam = async (team_id) => {
-    setLoading(true)
-    await deleteTeam(team_id)
-    setLoading(false)
-  }
+    setLoading(true);
+    await deleteTeam(team_id);
+    setLoading(false);
+  };
 
   return (
     <div>
@@ -39,7 +45,7 @@ const TeamTable = ({ id }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {teams.teams.map(team => (
+            {teams.teams.map((team) => (
               <TableRow key={team.id}>
                 <TableCell>
                   <Link to={`/leagues/${team.league_id}/${team.id}`}>
@@ -47,14 +53,25 @@ const TeamTable = ({ id }) => {
                   </Link>
                 </TableCell>
                 <TableCell>{team.created_at}</TableCell>
-                <TableCell><Button variant="contained" type="button" onClick={() => handleDeleteTeam(team.league_id, team.id)} loading={loading} loadingPosition="end" size="medium">DELETE</Button></TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    type="button"
+                    onClick={() => handleDeleteTeam(team.league_id, team.id)}
+                    loading={loading}
+                    loadingPosition="end"
+                    size="medium"
+                  >
+                    DELETE
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
     </div>
-  )
-}
+  );
+};
 
-export default TeamTable
+export default TeamTable;

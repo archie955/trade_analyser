@@ -1,0 +1,13 @@
+pytest_cache
+.vscode
+server
+tavenv
+**/*.git
+.env**
+**/*.md
+**/*.ini
+**/*.json
+build
+coverage
+**/*.gitignore
+**/node_modules
