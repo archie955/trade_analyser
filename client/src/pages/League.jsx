@@ -5,25 +5,25 @@ import TeamTable from '../components/TeamsTable'
 import TeamForm from '../components/CreateTeamForm'
 
 const League = () => {
-    const { id } = useParams()
-    const { leagues } = useLeagues()
-    const league = leagues.leagues.find(l => l.id === parseInt(id))
+  const { id } = useParams()
+  const { leagues } = useLeagues()
+  const league = leagues.leagues.find(l => l.id === parseInt(id))
 
-    if (!league) {
-        return (
-            <div>
-                League not found
-            </div>
-        )
-    }
-
+  if (!league) {
     return (
-        <div>
-            <LeagueDetails league={league} />
-            <TeamTable id={league.id} />
-            <TeamForm id={league.id} />
-        </div>
+      <div>
+                League not found
+      </div>
     )
+  }
+
+  return (
+    <div>
+      <LeagueDetails league={league} />
+      <TeamTable id={league.id} />
+      <TeamForm id={league.id} />
+    </div>
+  )
 }
 
 export default League

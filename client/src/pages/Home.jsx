@@ -1,25 +1,25 @@
-import { Breadcrumbs } from "@mui/material";
-import { Link } from "react-router-dom";
-import Navigation from "../components/Navigation";
+import { Breadcrumbs } from '@mui/material'
+import { Link } from 'react-router-dom'
+import Navigation from '../components/Navigation'
 
 const Home = () => {
 
-    return (
-        <div>
-            <Navigation>
-                <Breadcrumbs aria-label="breadcumb" color={'#fff'}>
-                    <Link to="/">
+  return (
+    <div>
+      <Navigation>
+        <Breadcrumbs aria-label="breadcumb" color={'#fff'}>
+          <Link to="/">
                         Login
-                    </Link>
-                    <Link to="/leagues">
+          </Link>
+          <Link to="/leagues">
                         Leagues
-                    </Link>
-                    <Link to="/home">
+          </Link>
+          <Link to="/home">
                         Home
-                    </Link>
-                </Breadcrumbs>
-            </Navigation>
-            <div>
+          </Link>
+        </Breadcrumbs>
+      </Navigation>
+      <div>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
                 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
                 veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
@@ -27,9 +27,9 @@ const Home = () => {
                 velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
                 cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
                 est laborum.
-            </div>
-        </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 export default Home

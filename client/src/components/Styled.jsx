@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 const Button = styled.button`
     background: #00338d;
@@ -8,7 +8,7 @@ const Button = styled.button`
     padding: 0.25em 1em;
     border: 2px solid black;
     border-radius: 3px;
-`;
+`
 
 const Navigation = styled.div`
     background: #00338d;
@@ -18,7 +18,7 @@ const Navigation = styled.div`
     padding: 8px 16px 8px 8px;
     border: 2px solid black;
     border-radius: 3px;
-`;
+`
 
 const FormDiv = styled.div`
     background: #00338d;
@@ -40,4 +40,4 @@ const Label = styled.div`
     justify-content: flex-start;
 `
 
-export default { Button, Navigation, FormDiv, Label}
+export default { Button, Navigation, FormDiv, Label }

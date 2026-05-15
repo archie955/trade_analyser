@@ -1,10 +1,10 @@
-import { create } from "zustand";
+import { create } from 'zustand'
 
 const useLoginStore = create((set) => ({
-    login: true,
-    actions: {
-        changeLogin: () => set(state => ({ login: !state.login }))
-    }
+  login: true,
+  actions: {
+    changeLogin: () => set(state => ({ login: !state.login }))
+  }
 }))
 
 export const useLogin = () => useLoginStore(state => state.login)
