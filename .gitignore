@@ -1,6 +1,6 @@
 tavenv
 **/__pycache__
-.env.dev
+**/.env*
 plan.md
 **/**:Zone.Identifier
 Notes.md
