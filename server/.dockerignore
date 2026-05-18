@@ -3,3 +3,5 @@
 node_modules
 tests
 .dockerignore
+.ruff_cache
+__pycache__
