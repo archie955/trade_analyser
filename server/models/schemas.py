@@ -84,14 +84,14 @@ class Teams(BaseModel):
     teams: List[TeamOut]
 
 
-# PLAYERS
+# TEAM PLAYERS
 
 
-class PlayerIn(BaseModel):
+class TeamPlayerIn(BaseModel):
     id: int
 
 
-class PlayerOut(PlayerIn):
+class TeamPlayerOut(TeamPlayerIn):
     id: int
     name: str
     team: datatypes.Teams
@@ -103,7 +103,16 @@ class PlayerOut(PlayerIn):
 
 
 class TeamPlayers(BaseModel):
-    players: List[PlayerOut]
+    players: List[TeamPlayerOut]
+    model_config = config
+
+
+class PlayersOut(TeamPlayerOut):
+    team_id: int
+    model_config = config
+
+class Players(BaseModel):
+    players: List[PlayersOut]
     model_config = config
 
 

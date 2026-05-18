@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_minutes: int
 
-    model_config = ConfigDict(case_sensitive=False)
+    # model_config = ConfigDict(case_sensitive=False)
+    model_config = ConfigDict(env_file=".env.dev")
 
 
 settings = Settings()

@@ -6,13 +6,13 @@ from database.database import get_db
 from authentication.auth import get_current_team
 
 router = APIRouter(
-    prefix="/leagues/{league_id}/teams/{team_id}/players", tags=["Players"]
+    prefix="/leagues/{league_id}/teams/{team_id}/players", tags=["Team Players"]
 )
 
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.PlayerOut)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.TeamPlayerOut)
 async def add_player(
-    player_in: schemas.PlayerIn,
+    player_in: schemas.TeamPlayerIn,
     db: AsyncSession = Depends(get_db),
     team: models.Team = Depends(get_current_team),
 ):
@@ -45,7 +45,7 @@ async def add_player(
 
     await db.commit()
 
-    return schemas.PlayerOut.model_validate(player)
+    return schemas.TeamPlayerOut.model_validate(player)
 
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=schemas.TeamPlayers)
@@ -57,7 +57,7 @@ def get_team_players(team: models.Team = Depends(get_current_team)):
             status_code=status.HTTP_404_NOT_FOUND, detail="No players in this team"
         )
 
-    players_list = [schemas.PlayerOut.model_validate(player) for player in players]
+    players_list = [schemas.TeamPlayerOut.model_validate(player) for player in players]
 
     return schemas.TeamPlayers(players=players_list)
 
