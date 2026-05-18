@@ -111,6 +111,7 @@ class PlayersOut(TeamPlayerOut):
     team_id: Optional[int] = None
     model_config = config
 
+
 class Players(BaseModel):
     players: List[PlayersOut]
     model_config = config

@@ -224,6 +224,7 @@ async def auth_client_players(client, db, helpers):
 
     return ac
 
+
 @pytest_asyncio.fixture
 async def auth_client_team_players(client, db, helpers):
     user = await helpers.full_login(client)
@@ -235,6 +236,7 @@ async def auth_client_team_players(client, db, helpers):
     await ac.seed_some_team_players()
 
     return ac
+
 
 @pytest_asyncio.fixture
 async def auth_client_trade(client, db, helpers):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 from models import models, schemas
@@ -6,9 +6,8 @@ from database.database import get_db
 from models.datatypes import Positions, Teams
 from authentication.auth import get_current_league
 
-router = APIRouter(
-    prefix="/players/{league_id}", tags=["Players"]
-)
+router = APIRouter(prefix="/players/{league_id}", tags=["Players"])
+
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=schemas.Players)
 async def fetch_players(
@@ -19,7 +18,7 @@ async def fetch_players(
     skip: int | None = None,
     limit: int | None = None,
     db: AsyncSession = Depends(get_db),
-    league: models.League = Depends(get_current_league)
+    league: models.League = Depends(get_current_league),
 ):
     stmt = (
         select(
@@ -30,20 +29,17 @@ async def fetch_players(
             models.Player.points_ppr,
             models.Player.points_halfppr,
             models.Player.points_noppr,
-            models.TeamPlayer.team_id.label("team_id")
+            models.TeamPlayer.team_id.label("team_id"),
         )
-        .outerjoin(
-            models.TeamPlayer,
-            models.Player.id == models.TeamPlayer.player_id
-        )
+        .outerjoin(models.TeamPlayer, models.Player.id == models.TeamPlayer.player_id)
         .where(
             or_(
                 models.TeamPlayer.team_id.is_(None),
-                models.TeamPlayer.league_id == league.id
+                models.TeamPlayer.league_id == league.id,
             )
         )
     )
-    
+
     if free_agent:
         stmt = stmt.where(models.TeamPlayer.team_id.is_(None))
 
@@ -64,10 +60,8 @@ async def fetch_players(
     if skip:
         stmt = stmt.offset(skip)
 
-    players = (
-        await db.execute(stmt)
-    ).mappings().all()
+    players = (await db.execute(stmt)).mappings().all()
 
-    return schemas.Players(players=[schemas.PlayersOut.model_validate(player) for player in players])
-
-
+    return schemas.Players(
+        players=[schemas.PlayersOut.model_validate(player) for player in players]
+    )

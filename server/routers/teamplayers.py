@@ -10,7 +10,9 @@ router = APIRouter(
 )
 
 
-@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.TeamPlayerOut)
+@router.post(
+    "", status_code=status.HTTP_201_CREATED, response_model=schemas.TeamPlayerOut
+)
 async def add_player(
     player_in: schemas.TeamPlayerIn,
     db: AsyncSession = Depends(get_db),
