@@ -54,3 +54,50 @@ async def test_get_players_position(auth_client_team_players):
     for player in players:
         assert player["position"] == Positions.QB
 
+async def test_get_players_team(auth_client_team_players):
+    response = await auth_client_team_players.get(f"{BASEURL}?team=NYG")
+
+    assert response.status_code == 200
+
+    players = response.json()["players"]
+    assert len(players) == 5
+    for player in players:
+        assert player["team"] == Teams.NYG
+
+async def test_get_players_free_agent(auth_client_team_players):
+    response = await auth_client_team_players.get(f"{BASEURL}?free_agent=True")
+
+    assert response.status_code == 200
+
+    players = response.json()["players"]
+
+    assert len(players) == LENGTH - 8
+    assert players[0]["name"] == "Jaxson Dart"
+
+async def test_get_players_multiple_params(auth_client_team_players):
+    response = await auth_client_team_players.get(f"{BASEURL}?team=NYG&free_agent=True&asc=True")
+
+    assert response.status_code == 200
+
+    players = response.json()["players"]
+
+    assert len(players) == 2
+    assert players[0]["name"] == "Graham Gano"
+    assert players[1]["name"] == "Jaxson Dart"
+
+async def test_get_players_wrong_datatype_param(auth_client_team_players):
+    response = await auth_client_team_players.get(f"{BASEURL}?limit=False")
+
+    assert response.status_code == 422
+
+async def test_get_players_wrong_datatype_enum(auth_client_team_players):
+    response = await auth_client_team_players.get(f"{BASEURL}?pos=FLEX")
+
+    assert response.status_code == 422
+
+async def test_get_players_wrong_league_id(auth_client_team_players):
+    response = await auth_client_team_players.get("/players/444")
+
+    assert response.status_code == 404
+
+    

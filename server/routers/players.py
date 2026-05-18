@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 from models import models, schemas
 from database.database import get_db
-from models.datatypes import Positions
+from models.datatypes import Positions, Teams
 from authentication.auth import get_current_league
 
 router = APIRouter(
@@ -14,6 +14,7 @@ router = APIRouter(
 async def fetch_players(
     free_agent: bool = False,
     pos: Positions | None = None,
+    team: Teams | None = None,
     asc: bool = False,
     skip: int | None = None,
     limit: int | None = None,
@@ -48,6 +49,9 @@ async def fetch_players(
 
     if pos:
         stmt = stmt.where(models.Player.position == pos)
+
+    if team:
+        stmt = stmt.where(models.Player.team == team)
 
     if asc:
         stmt = stmt.order_by(models.Player.points_ppr.asc())
