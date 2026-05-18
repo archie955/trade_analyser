@@ -98,7 +98,7 @@ data = {
         {
             "id": 12,
             "name": "Graham Gano",
-            "points": 4.0,
+            "points": 3.9,
             "position": Positions.K,
             "team": Teams.NYG,
         },

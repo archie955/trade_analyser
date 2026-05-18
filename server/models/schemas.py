@@ -108,7 +108,7 @@ class TeamPlayers(BaseModel):
 
 
 class PlayersOut(TeamPlayerOut):
-    team_id: int
+    team_id: Optional[int] = None
     model_config = config
 
 class Players(BaseModel):

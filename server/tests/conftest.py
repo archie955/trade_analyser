@@ -98,6 +98,17 @@ class AuthClient:
             self.db.add(player)
             await self.db.flush()
 
+    async def seed_some_team_players(self) -> None:
+        self.db.add(TeamPlayer(team_id=1, league_id=1, player_id=1))
+        self.db.add(TeamPlayer(team_id=1, league_id=1, player_id=2))
+        self.db.add(TeamPlayer(team_id=1, league_id=1, player_id=9))
+        self.db.add(TeamPlayer(team_id=1, league_id=1, player_id=13))
+        self.db.add(TeamPlayer(team_id=2, league_id=1, player_id=5))
+        self.db.add(TeamPlayer(team_id=2, league_id=1, player_id=6))
+        self.db.add(TeamPlayer(team_id=2, league_id=1, player_id=11))
+        self.db.add(TeamPlayer(team_id=2, league_id=1, player_id=15))
+        await self.db.flush()
+
     async def seed_players_teams(self, team1_id, team2_id) -> None:
         for p in data["team1"]:
             player = Player(
@@ -213,6 +224,17 @@ async def auth_client_players(client, db, helpers):
 
     return ac
 
+@pytest_asyncio.fixture
+async def auth_client_team_players(client, db, helpers):
+    user = await helpers.full_login(client)
+
+    ac = AuthClient(client, user, db=db)
+    await ac.seed_leagues()
+    await ac.seed_teams()
+    await ac.seed_players()
+    await ac.seed_some_team_players()
+
+    return ac
 
 @pytest_asyncio.fixture
 async def auth_client_trade(client, db, helpers):

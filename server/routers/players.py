@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text
+from sqlalchemy import select, or_
 from models import models, schemas
 from database.database import get_db
 from models.datatypes import Positions
@@ -20,28 +20,50 @@ async def fetch_players(
     db: AsyncSession = Depends(get_db),
     league: models.League = Depends(get_current_league)
 ):
-    stmt = f"SELECT p.*, tp.team_id AS team_id FROM players p LEFT JOIN team_players tp ON (p.id = tp.player_id) WHERE (tp.team_id IS NULL OR tp.league_id = {league.id})"
+    stmt = (
+        select(
+            models.Player.id,
+            models.Player.name,
+            models.Player.team,
+            models.Player.position,
+            models.Player.points_ppr,
+            models.Player.points_halfppr,
+            models.Player.points_noppr,
+            models.TeamPlayer.team_id.label("team_id")
+        )
+        .outerjoin(
+            models.TeamPlayer,
+            models.Player.id == models.TeamPlayer.player_id
+        )
+        .where(
+            or_(
+                models.TeamPlayer.team_id.is_(None),
+                models.TeamPlayer.league_id == league.id
+            )
+        )
+    )
+    
     if free_agent:
-        stmt += " AND tp.team_id IS NULL"
+        stmt = stmt.where(models.TeamPlayer.team_id.is_(None))
+
     if pos:
-        stmt += f" AND p.pos = {pos}"
+        stmt = stmt.where(models.Player.position == pos)
+
     if asc:
-        stmt += " ORDER BY p.points_ppr"
+        stmt = stmt.order_by(models.Player.points_ppr.asc())
     else:
-        stmt += " ORDER BY p.points_ppr DESC"
+        stmt = stmt.order_by(models.Player.points_ppr.desc())
+
     if limit:
-        stmt += f" LIMIT {limit}"
+        stmt = stmt.limit(limit)
+
     if skip:
-        stmt += f" OFFSET {skip}"
+        stmt = stmt.offset(skip)
 
     players = (
-        await db.execute(text(stmt))
-    ).scalars().all()
+        await db.execute(stmt)
+    ).mappings().all()
 
-    print(players)
-
-    players_list = [schemas.PlayersOut.model_validate(player) for player in players]
-
-    return schemas.Players(players=players_list)
+    return schemas.Players(players=[schemas.PlayersOut.model_validate(player) for player in players])
 
 
