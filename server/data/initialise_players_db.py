@@ -21,6 +21,7 @@ def read_data_and_transform():
     data = [qb, rb, wr, te, dst, k]
     return data
 
+
 async def add_data():
     data = read_data_and_transform()
     async with AsyncSessionLocal() as db:
@@ -36,7 +37,7 @@ async def add_data():
                     "position": row.get("POS"),
                     "points_ppr": row.get("FANTASYPTS"),
                     "points_halfppr": row.get("FANTASYPTS"),
-                    "points_noppr": row.get("FANTASYPTS")
+                    "points_noppr": row.get("FANTASYPTS"),
                 }
                 for row in d
             ]
@@ -47,10 +48,6 @@ async def add_data():
         await db.commit()
 
     return {"status": "success"}
-
-    
-
-
 
 
 if __name__ == "__main__":
