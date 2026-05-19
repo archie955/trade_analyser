@@ -31,6 +31,7 @@ export const Teams = {
   TB: "TB",
   TEN: "TEN",
   WAS: "WAS",
+  FA: "FA",
 };
 
 export const Positions = {

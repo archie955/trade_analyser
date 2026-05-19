@@ -28,7 +28,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route
           path="/leagues"
           element={
