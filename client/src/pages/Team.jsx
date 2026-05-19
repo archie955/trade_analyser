@@ -16,7 +16,7 @@ const Team = () => {
   return (
     <div>
       <TeamDetails team={team} />
-      <TeamPlayerTable league_id={team.league_id} team_id={team.id}/>
+      <TeamPlayerTable league_id={team.league_id} team_id={team.id} />
       <AddPlayerTable league_id={team.league_id} team_id={team.id} />
     </div>
   );
