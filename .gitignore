@@ -2,7 +2,7 @@ tavenv
 **/__pycache__
 **/.env*
 plan.md
-**/**:Zone.Identifier
 Notes.md
 to_do_list.md
 **/node_modules
+**/*:Zone.Identifier

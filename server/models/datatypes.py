@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Teams(str, Enum):
-    ARI = "ARZ"
+    ARI = "ARI"
     ATL = "ATL"
     BAL = "BAL"
     BUF = "BUF"
@@ -34,6 +34,7 @@ class Teams(str, Enum):
     TB = "TB"
     TEN = "TEN"
     WAS = "WAS"
+    FA = "FA"
 
 
 class Positions(str, Enum):
