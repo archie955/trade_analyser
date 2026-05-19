@@ -12,7 +12,7 @@ const useTeamPlayers = (league_id, team_id) => {
 
   const newTeamPlayerMutation = useMutation({
     mutationFn: (player_id) =>
-      teamPlayerService.addTeamPlayer(league_id, team_id, player_id),
+      teamPlayerService.addTeamPlayers(league_id, team_id, player_id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teamplayers"] });
     },

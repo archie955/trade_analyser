@@ -12,7 +12,6 @@ const Team = () => {
   if (!team) {
     return <div>Team not found</div>;
   }
-  console.log(team);
 
   return (
     <div>

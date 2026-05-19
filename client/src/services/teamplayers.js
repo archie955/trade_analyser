@@ -8,9 +8,12 @@ const getTeamPlayers = async (league_id, team_id) => {
 };
 
 const addTeamPlayers = async (league_id, team_id, player_id) => {
+  console.log(
+    `Endpoint successfully called, attempting to add player ${player_id}`,
+  );
   const response = await api.post(
     `/leagues/${league_id}/teams/${team_id}/players`,
-    player_id,
+    { id: player_id },
   );
   return response.data;
 };

@@ -14,9 +14,9 @@ import {
 import { Link } from "react-router-dom";
 
 const AddPlayerTable = ({ league_id, team_id }) => {
-    const { players, isPending, remove } = usePlayers();
+    const { players, isPending, remove } = usePlayers({ league_id: league_id, limit: 30 });
     const { addPlayer } = useTeamPlayers(league_id, team_id);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
 
     if (isPending) {
         return <div>loading data...</div>;
@@ -38,6 +38,7 @@ const AddPlayerTable = ({ league_id, team_id }) => {
                   <TableCell>Name</TableCell>
                   <TableCell>Team</TableCell>
                   <TableCell>Position</TableCell>
+                  <TableCell>Points/Week</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -45,7 +46,8 @@ const AddPlayerTable = ({ league_id, team_id }) => {
                   <TableRow key={player.id}>
                     <TableCell>{player.name}</TableCell>
                     <TableCell>{player.team}</TableCell>
-                    <TableCell>{player.pos}</TableCell>
+                    <TableCell>{player.position}</TableCell>
+                    <TableCell>{player.points_ppr}</TableCell>
                     <TableCell>
                       <Button
                         variant="contained"

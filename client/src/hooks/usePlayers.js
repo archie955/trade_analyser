@@ -20,12 +20,8 @@ const usePlayers = ({
   });
 
   const removeFromFA = useMutation({
-    mutationFn: (id) => {
-      const players = queryClient.getQueryData(["players"]);
-      queryClient.setQueryData(
-        ["players"],
-        players.filter((p) => p.id !== id),
-      );
+    mutationFn: () => {
+      queryClient.invalidateQueries({ queryKey: ["players"] });
     },
   });
 

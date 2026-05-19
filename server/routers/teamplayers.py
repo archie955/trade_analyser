@@ -55,9 +55,7 @@ def get_team_players(team: models.Team = Depends(get_current_team)):
     players = team.players
 
     if not players:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No players in this team"
-        )
+        return schemas.TeamPlayers(players=[])
 
     players_list = [schemas.TeamPlayerOut.model_validate(player) for player in players]
 

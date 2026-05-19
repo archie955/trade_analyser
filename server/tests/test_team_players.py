@@ -86,7 +86,9 @@ async def test_get_players_wrong_team(auth_client_trade):
 async def test_get_players_no_initialised_players(auth_client_players):
     response = await auth_client_players.get(BASEURL)
 
-    assert response.status_code == 404
+    assert response.status_code == 200
+
+    assert len(response.json()["players"]) == 0
 
 
 async def test_no_auth_get_players(auth_client_trade):

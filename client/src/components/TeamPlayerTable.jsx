@@ -20,7 +20,7 @@ const TeamPlayerTable = ({ league_id, team_id }) => {
         return <div>loading data...</div>;
     }
 
-    if (teamPlayers.teamplayers.length === 0) {
+    if (teamPlayers.players.length === 0) {
         return (
             <div>
                 <div>No players yet</div>
@@ -43,14 +43,16 @@ const TeamPlayerTable = ({ league_id, team_id }) => {
                   <TableCell>Name</TableCell>
                   <TableCell>Team</TableCell>
                   <TableCell>Position</TableCell>
+                  <TableCell>Points/Week</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {teamPlayers.teamplayers.map((player) => (
+                {teamPlayers.players.map((player) => (
                   <TableRow key={player.id}>
                     <TableCell>{player.name}</TableCell>
                     <TableCell>{player.team}</TableCell>
-                    <TableCell>{player.pos}</TableCell>
+                    <TableCell>{player.position}</TableCell>
+                    <TableCell>{player.points_ppr}</TableCell>
                     <TableCell>
                       <Button
                         variant="contained"
