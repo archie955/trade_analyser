@@ -1,7 +1,7 @@
 from models.datatypes import Teams, Positions
 from tests.rawdata import data
 
-BASEURL = "/players/1"
+BASEURL = "/players/1/1"
 LENGTH = len(data["team1"]) + len(data["team2"])
 
 
@@ -11,9 +11,9 @@ async def test_get_players(auth_client_team_players):
     assert response.status_code == 200
 
     players = response.json()["players"]
-    assert len(players) == LENGTH
-    assert players[0]["name"] == "Josh Allen"
-    assert players[0]["team_id"] == 1
+    assert len(players) == LENGTH - 4
+    assert players[0]["name"] == "Jaxson Dart"
+    assert players[0]["team_id"] is None
 
 
 async def test_get_players_asc(auth_client_team_players):
@@ -22,7 +22,7 @@ async def test_get_players_asc(auth_client_team_players):
     assert response.status_code == 200
 
     players = response.json()["players"]
-    assert len(players) == LENGTH
+    assert len(players) == LENGTH - 4
     assert players[0]["name"] == "Graham Gano"
     assert players[0]["team_id"] is None
     assert players[0]["points_ppr"] == 3.9
@@ -43,9 +43,9 @@ async def test_get_players_skip(auth_client_team_players):
     assert response.status_code == 200
 
     players = response.json()["players"]
-    assert len(players) == LENGTH - 3
-    assert players[0]["name"] == "Tyler Shough"
-    assert players[0]["team_id"] is None
+    assert len(players) == LENGTH - 7
+    assert players[0]["name"] == "Tyler Warren"
+    assert players[0]["team_id"] == 2
 
 
 async def test_get_players_position(auth_client_team_players):
@@ -54,7 +54,7 @@ async def test_get_players_position(auth_client_team_players):
     assert response.status_code == 200
 
     players = response.json()["players"]
-    assert len(players) == 4
+    assert len(players) == 3
     for player in players:
         assert player["position"] == Positions.QB
 
@@ -65,7 +65,7 @@ async def test_get_players_team(auth_client_team_players):
     assert response.status_code == 200
 
     players = response.json()["players"]
-    assert len(players) == 5
+    assert len(players) == 4
     for player in players:
         assert player["team"] == Teams.NYG
 
@@ -108,6 +108,29 @@ async def test_get_players_wrong_datatype_enum(auth_client_team_players):
 
 
 async def test_get_players_wrong_league_id(auth_client_team_players):
-    response = await auth_client_team_players.get("/players/444")
+    response = await auth_client_team_players.get("/players/444/1")
 
     assert response.status_code == 404
+
+async def test_get_players_wrong_team_id(auth_client_team_players):
+    response = await auth_client_team_players.get("/players/1/444")
+
+    assert response.status_code == 404
+
+async def test_get_players_no_current_team_players(auth_client_team_players):
+    response = await auth_client_team_players.get(f"{BASEURL}")
+
+    assert response.status_code == 200
+
+    player_names = [p["name"] for p in response.json()["players"]]
+
+    assert "Josh Allen" not in player_names
+
+    response_2 = await auth_client_team_players.get("/players/1/2")
+
+    assert response.status_code == 200
+
+    player_names_2 = [p["name"] for p in response_2.json()["players"]]
+
+    assert "Josh Allen" in player_names_2
+    

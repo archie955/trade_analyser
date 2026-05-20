@@ -143,3 +143,4 @@ async def test_delete_player_wrong_team_id(auth_client_trade):
     response = await auth_client_trade.delete("/leagues/1/teams/999/players/1")
 
     assert response.status_code == 404
+    

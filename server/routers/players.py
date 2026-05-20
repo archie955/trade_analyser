@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, and_
 from models import models, schemas
 from database.database import get_db
 from models.datatypes import Positions, Teams
-from authentication.auth import get_current_league
+from authentication.auth import get_current_team
 
-router = APIRouter(prefix="/players/{league_id}", tags=["Players"])
+router = APIRouter(prefix="/players/{league_id}/{team_id}", tags=["Players"])
 
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=schemas.Players)
@@ -18,7 +18,7 @@ async def fetch_players(
     skip: int | None = None,
     limit: int | None = None,
     db: AsyncSession = Depends(get_db),
-    league: models.League = Depends(get_current_league),
+    user_team: models.Team = Depends(get_current_team),
 ):
     stmt = (
         select(
@@ -35,7 +35,10 @@ async def fetch_players(
         .where(
             or_(
                 models.TeamPlayer.team_id.is_(None),
-                models.TeamPlayer.league_id == league.id,
+                and_(
+                    models.TeamPlayer.league_id == user_team.league_id,
+                    models.TeamPlayer.team_id != user_team.id
+                ),
             )
         )
     )
